@@ -290,3 +290,20 @@ document.addEventListener("DOMContentLoaded", () => {
     bindToggleColor('excessToggle');
   });
 })();
+
+(function(){
+  function bindToggleClass(id){
+    const input = document.getElementById(id);
+    if(!input) return;
+    const field = input.closest('.field');
+    if(!field) return;
+    function apply(){ field.classList.toggle('on', !!input.checked); }
+    input.addEventListener('change', apply);
+    apply();
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    bindToggleClass('commodityToggle');
+    bindToggleClass('distributionToggle');
+    bindToggleClass('excessToggle');
+  });
+})();
