@@ -98,3 +98,6 @@ input:checked + input:checked + .switch input:checked + .switch input:checked +
 .switch input:checked + .slider:before{transform:translateX(24px);}
 .toggle-text{font-size:13px;color:#6b7280;user-select:none;}
 .field.on .toggle-text{color:#111827;}
+
+/* hide legacy pill toggles */
+.toggle-group{display:none !important;}
