@@ -9,3 +9,8 @@ __pycache__/
 .DS_Store
 .vscode/
 .idea/
+# backups
+*.bak
+*.bak2
+*.broken
+pyproject.toml.bak
