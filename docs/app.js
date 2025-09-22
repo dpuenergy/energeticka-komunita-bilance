@@ -1,227 +1,215 @@
-﻿// MalĂ˝ API wrapper s robustnĂ­m error-handlingem
-const API = (() => {
-  const base = () => window.API_BASE_URL?.replace(/\\/$/, "") || "";
-  const headersJson = { "Content-Type": "application/json" };
+﻿// === TÉMA / BARVY (laděno na dpuenergy.cz – modrá/tyrkys) ===
+// Pozn.: snadná úprava v CSS: .text-brand-600, .bg-brand-*, .border-brand-*
 
+// === API WRAPPER (ponecháno z předchozí verze) ===
+const API = (() => {
+  const base = () => window.API_BASE_URL?.replace(/\/$/, "") || "";
+  const headersJson = { "Content-Type": "application/json" };
   async function handle(r) {
     if (!r.ok) {
-      let bodyText = "";
-      try { bodyText = await r.text(); } catch {}
-      const msg = bodyText || r.statusText || "Chyba poĹľadavku";
-      throw new Error(msg);
+      let bodyText = ""; try { bodyText = await r.text(); } catch {}
+      throw new Error(bodyText || r.statusText || "Chyba požadavku");
     }
     const ct = r.headers.get("content-type") || "";
     if (ct.includes("application/json")) return r.json();
     return r.text();
   }
-
   async function upload(key, file) {
     const url = base() + "/api/upload";
-    const fd = new FormData();
-    fd.append("key", key);
-    fd.append("file", file);
-    const r = await fetch(url, { method: "POST", body: fd });
-    return handle(r);
+    const fd = new FormData(); fd.append("key", key); fd.append("file", file);
+    const r = await fetch(url, { method: "POST", body: fd }); return handle(r);
   }
-
   async function runStep(step, params) {
     const url = base() + "/api/run/" + encodeURIComponent(step);
     const r = await fetch(url, { method: "POST", headers: headersJson, body: JSON.stringify(params) });
     return handle(r);
   }
-
-  async function listOutputs() {
-    const r = await fetch(base() + "/api/outputs");
-    return handle(r);
-  }
-
-  async function summaryStep3() {
-    const r = await fetch(base() + "/api/summary/step3");
-    return handle(r);
-  }
-
-  function downloadUrl(name) {
-    return base() + "/api/outputs/" + encodeURIComponent(name);
-  }
-
+  async function listOutputs(){ return handle(await fetch(base()+"/api/outputs")); }
+  async function summaryStep3(){ return handle(await fetch(base()+"/api/summary/step3")); }
+  function downloadUrl(name){ return base()+"/api/outputs/"+encodeURIComponent(name); }
   return { upload, runStep, listOutputs, summaryStep3, downloadUrl };
 })();
 
-// PomocnĂ© UI utility
-function qs(sel) { return document.querySelector(sel); }
-function qsa(sel) { return Array.from(document.querySelectorAll(sel)); }
+// === STAV A LOKÁLNÍ DATOVÝ MODEL ===
+const state = {
+  commodityMode: "uniform",
+  distributionMode: "uniform",
+  feedinMode: "uniform",
+  objects: [],
+  editIndex: null,
+};
 
-function showAlert(type, message) {
-  const el = qs("#alert");
-  const base = "rounded-lg border px-4 py-3 text-sm";
-  const styles = {
-    info: "bg-blue-50 border-blue-200 text-blue-900",
-    success: "bg-green-50 border-green-200 text-green-900",
-    error: "bg-red-50 border-red-200 text-red-900",
-    warn: "bg-yellow-50 border-yellow-200 text-yellow-900",
-  };
-  el.className = base + " " + (styles[type] || styles.info);
-  el.textContent = message;
-  el.classList.remove("hidden");
-  if (type === "success" || type === "info") {
-    setTimeout(() => el.classList.add("hidden"), 4000);
+// === UI HELPERS ===
+const qs = sel => document.querySelector(sel);
+const qsa = sel => Array.from(document.querySelectorAll(sel));
+
+function toast(msg, type="info") {
+  const el = document.createElement("div");
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.classList.add("show"));
+  setTimeout(() => { el.classList.remove("show"); setTimeout(()=>el.remove(), 300); }, 4000);
+}
+
+function updateUniformVisibility() {
+  const show = state.commodityMode==="uniform" && state.distributionMode==="uniform" && state.feedinMode==="uniform";
+  qs("#uniform-pricing").classList.toggle("hidden", !show);
+  qsa(".per-object-field").forEach(el => el.classList.toggle("hidden", show));
+}
+
+function renderObjects() {
+  const tb = qs("#objects-tbody");
+  tb.innerHTML = "";
+  if (!state.objects.length) {
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = 14;
+    td.className = "px-4 py-6 text-center text-slate-500";
+    td.textContent = "Zatím žádné objekty.";
+    tr.appendChild(td); tb.appendChild(tr); return;
   }
-}
+  state.objects.forEach((o, idx) => {
+    const tr = document.createElement("tr");
+    function cell(txt){ const td=document.createElement("td"); td.className="td"; td.textContent=txt??""; return td; }
 
-function clearAlert() {
-  const el = qs("#alert");
-  el.classList.add("hidden");
-  el.textContent = "";
-}
+    tr.appendChild(cell(o.name));
+    tr.appendChild(cell(o.annualCons ?? ""));
+    tr.appendChild(cell(o.annualGen ?? ""));
+    tr.appendChild(cell(o.priceComm ?? (state.commodityMode==="uniform" ? "– (uniform)" : "")));
+    tr.appendChild(cell(o.distMode==="tariff" ? "dle sazby" : (o.priceDist ?? (state.distributionMode==="uniform"?"– (uniform)":""))));
+    tr.appendChild(cell(o.distMode==="tariff" ? (o.tariff || "") : ""));
+    tr.appendChild(cell(o.priceFeedin ?? (state.feedinMode==="uniform" ? "– (uniform)" : "")));
+    tr.appendChild(cell(o.fveKwP ?? ""));
+    tr.appendChild(cell(o.kgjKwe ?? ""));
+    tr.appendChild(cell(o.batKwh ?? ""));
+    tr.appendChild(cell(o.tuvM3 ?? ""));
+    tr.appendChild(cell(o.hasSeriesCons ? "ano" : "ne"));
+    tr.appendChild(cell(o.hasSeriesGen ? "ano" : "ne"));
 
-function setupTabs() {
-  const tabs = qs("#tabs");
-  tabs?.addEventListener("click", (e) => {
-    const btn = e.target.closest("button[data-tab]");
-    if (!btn) return;
-    const tab = btn.getAttribute("data-tab");
-    qsa(".tab-btn").forEach(b => b.classList.remove("border-b-2","border-slate-900","text-slate-900"));
-    btn.classList.add("border-b-2","border-slate-900","text-slate-900");
-    qsa(".tab-panel").forEach(p => p.classList.add("hidden"));
-    qs("#tab-" + tab)?.classList.remove("hidden");
+    const tdActions = document.createElement("td"); tdActions.className="td";
+    const editBtn = document.createElement("button"); editBtn.className="btn-ghost text-brand-700"; editBtn.textContent="Upravit";
+    editBtn.onclick = () => openObjectPanel(idx);
+    const delBtn = document.createElement("button"); delBtn.className="btn-ghost text-red-700"; delBtn.textContent="Smazat";
+    delBtn.onclick = () => { state.objects.splice(idx,1); renderObjects(); };
+    tdActions.appendChild(editBtn); tdActions.appendChild(document.createTextNode(" ")); tdActions.appendChild(delBtn);
+    tr.appendChild(tdActions);
+
+    tb.appendChild(tr);
   });
 }
 
-async function refreshOutputs() {
-  const box = qs("#outputs-list");
-  box.innerHTML = '<div class="text-sm text-slate-500">NaÄŤĂ­tĂˇmâ€¦</div>';
-  try {
-    const data = await API.listOutputs();
-    const list = Array.isArray(data?.csv) ? data.csv : [];
-    if (!list.length) {
-      box.innerHTML = '<div class="text-sm text-slate-500">Ĺ˝ĂˇdnĂ© vĂ˝stupy zatĂ­m nejsou.</div>';
-      return;
-    }
-    const ul = document.createElement("ul");
-    ul.className = "list-disc pl-5 space-y-1";
-    list.forEach(name => {
-      const li = document.createElement("li");
-      const a = document.createElement("a");
-      a.href = API.downloadUrl(name);
-      a.textContent = name;
-      a.className = "text-blue-700 hover:underline break-all";
-      li.appendChild(a);
-      ul.appendChild(li);
-    });
-    box.innerHTML = "";
-    box.appendChild(ul);
-  } catch (err) {
-    box.innerHTML = '<div class="text-sm text-red-700 whitespace-pre-wrap"></div>';
-    box.firstChild.textContent = String(err?.message || err);
-  }
+function openObjectPanel(idx=null) {
+  state.editIndex = idx;
+  const panel = qs("#object-panel");
+  panel.classList.remove("hidden");
+
+  const o = (idx!=null) ? state.objects[idx] : {};
+  qs("#obj-name").value = o.name || "";
+  qs("#obj-annual-cons").value = o.annualCons || "";
+  qs("#obj-has-series-cons").checked = !!o.hasSeriesCons;
+  qs("#obj-fve").value = o.fveKwP || "";
+  qs("#obj-kgj").value = o.kgjKwe || "";
+  qs("#obj-bat").value = o.batKwh || "";
+  qs("#obj-tuv").value = o.tuvM3 || "";
+  qs("#obj-price-comm").value = o.priceComm || "";
+  qs("#obj-dist-mode").value = o.distMode || "unit";
+  qs("#obj-price-feedin").value = o.priceFeedin || "";
+
+  qs("#obj-save").textContent = (idx!=null) ? "Uložit změny" : "Přidat objekt";
 }
 
-async function refreshSummary() {
-  const pre = qs("#summary-json");
-  pre.textContent = "NaÄŤĂ­tĂˇmâ€¦";
-  try {
-    const data = await API.summaryStep3();
-    pre.textContent = JSON.stringify(data, null, 2);
-  } catch (err) {
-    pre.textContent = "Chyba pĹ™i naÄŤĂ­tĂˇnĂ­ summary:\\n" + String(err?.message || err);
-  }
+function closeObjectPanel(){ qs("#object-panel").classList.add("hidden"); }
+
+function collectObjectFromForm() {
+  const o = {
+    name: qs("#obj-name").value.trim(),
+    annualCons: numberOrNull(qs("#obj-annual-cons").value),
+    hasSeriesCons: qs("#obj-has-series-cons").checked,
+    fveKwP: numberOrNull(qs("#obj-fve").value),
+    kgjKwe: numberOrNull(qs("#obj-kgj").value),
+    batKwh: numberOrNull(qs("#obj-bat").value),
+    tuvM3: numberOrNull(qs("#obj-tuv").value),
+    priceComm: perObjEnabled('commodity') ? numberOrNull(qs("#obj-price-comm").value) : null,
+    distMode: perObjEnabled('distribution') ? qs("#obj-dist-mode").value : "unit",
+    priceDist: null,
+    tariff: null,
+    priceFeedin: perObjEnabled('feedin') ? numberOrNull(qs("#obj-price-feedin").value) : null,
+    hasSeriesGen: false, // placeholder
+  };
+  return o;
 }
 
-async function runStep3() {
-  clearAlert();
-  const btn = qs("#run-step3");
-  const status = qs("#run-status");
-  const runOk = qs("#run-ok");
-  const runRc = qs("#run-rc");
-  const runLog = qs("#run-log");
-  const newCsv = qs("#new-csv");
+function numberOrNull(v){ const n=Number(v); return isNaN(n)?null:n; }
+function perObjEnabled(kind){
+  if (kind==="commodity") return state.commodityMode==="per-object";
+  if (kind==="distribution") return state.distributionMode==="per-object";
+  if (kind==="feedin") return state.feedinMode==="per-object";
+  return false;
+}
 
-  runOk.textContent = "â€“";
-  runRc.textContent = "â€“";
-  runLog.textContent = "";
-  newCsv.innerHTML = "";
-
-  const fEano = qs("#file-eano").files[0];
-  const fEand = qs("#file-eand").files[0];
-  const fLocal = qs("#file-local").files[0];
-
-  if (!fEano || !fEand || !fLocal) {
-    showAlert("warn", "ProsĂ­m vyber tĹ™i vstupnĂ­ soubory (eano/eand/local).");
-    return;
-  }
-
-  const price_commodity_mwh = Number(qs("#price_commodity_mwh").value || 2200);
-  const price_distribution_mwh = Number(qs("#price_distribution_mwh").value || 1800);
-  const price_feed_in_mwh = Number(qs("#price_feed_in_mwh").value || 1200);
-  const mode = qs("#mode").value || "hybrid";
-  const max_recipients = Number(qs("#max_recipients").value || 3);
-
-  btn.disabled = true;
-  btn.classList.add("opacity-60","cursor-not-allowed");
-  status.textContent = "BÄ›ĹľĂ­â€¦ nahrĂˇvĂˇm soubory a spouĹˇtĂ­m vĂ˝poÄŤet.";
+// === BĚH STEP 3 (zatím) ===
+async function runStep13() {
+  const params = {
+    outdir: "out",
+    price_commodity_mwh: Number(qs("#price_commodity_mwh").value || 2200),
+    price_distribution_mwh: Number(qs("#price_distribution_mwh").value || 1800),
+    price_feed_in_mwh: Number(qs("#price_feed_in_mwh").value || 1200),
+    mode: qs("#mode").value || "hybrid",
+    max_recipients: Number(qs("#max_recipients").value || 3),
+  };
+  const msg = qs("#run-msg");
+  msg.textContent = "Spouštím step 3…";
+  const btn = qs("#btn-run-step13"); btn.disabled = true; btn.classList.add("opacity-60","cursor-not-allowed");
   try {
-    const upEano = await API.upload("eano_after_pv_csv", fEano);
-    const upEand = await API.upload("eand_after_pv_csv", fEand);
-    const upLocal = await API.upload("local_selfcons_csv", fLocal);
-
-    const params = {
-      eano_after_pv_csv: upEano?.saved_as || "data/uploads/eano_after_pv_csv.csv",
-      eand_after_pv_csv: upEand?.saved_as || "data/uploads/eand_after_pv_csv.csv",
-      local_selfcons_csv: upLocal?.saved_as || "data/uploads/local_selfcons_csv.csv",
-      outdir: "out",
-      price_commodity_mwh,
-      price_distribution_mwh,
-      price_feed_in_mwh,
-      mode,
-      max_recipients,
-    };
-
     const res = await API.runStep("step3", params);
-    runOk.textContent = res?.ok ? "OK" : "FAILED";
-    runRc.textContent = (typeof res?.return_code === "number") ? String(res.return_code) : "â€”";
-    runLog.textContent = typeof res?.log === "string" ? res.log : JSON.stringify(res, null, 2);
-
-    if (Array.isArray(res?.new_csv) && res.new_csv.length) {
-      res.new_csv.forEach(name => {
-        const li = document.createElement("li");
-        const a = document.createElement("a");
-        a.href = API.downloadUrl(name);
-        a.textContent = name;
-        a.className = "text-blue-700 hover:underline break-all";
-        li.appendChild(a);
-        newCsv.appendChild(li);
-      });
-    }
-
-    showAlert("success", "Krok 3 probÄ›hl. VĂ˝stupy a summary jsem obnovil.");
-  } catch (err) {
-    showAlert("error", "Chyba: " + String(err?.message || err));
+    if (res?.ok) { msg.textContent = "Hotovo: OK. Otevři Výstupy. "; }
+    else { msg.textContent = "Běh skončil s chybou. " + (res?.return_code ?? ""); }
+  } catch (e) {
+    msg.textContent = "Chyba: " + (e?.message || e);
   } finally {
-    btn.disabled = false;
-    btn.classList.remove("opacity-60","cursor-not-allowed");
-    status.textContent = "";
-    await refreshOutputs();
-    await refreshSummary();
+    btn.disabled = false; btn.classList.remove("opacity-60","cursor-not-allowed");
   }
 }
 
-function setupRun() { qs("#run-step3")?.addEventListener("click", runStep3); }
+// === BUILD INFO ===
+async function showBuildInfo() {
+  try {
+    const r = await fetch("./build-info.json", { cache: "no-store" });
+    if (!r.ok) return;
+    const data = await r.json();
+    const el = document.getElementById("build-info");
+    if (el && data.commit) el.textContent = `build ${data.commit.substring(0,7)} · ${data.date}`;
+  } catch {}
+}
 
-window.addEventListener("DOMContentLoaded", async () => {
-  (function applyApiLabel(){ const el = document.getElementById("api-base"); if (el) el.textContent = window.API_BASE_URL; })();
-  (function setupTabs(){
-    const tabs = document.getElementById("tabs");
-    tabs?.addEventListener("click", (e) => {
-      const btn = e.target.closest("button[data-tab]");
-      if (!btn) return;
-      const tab = btn.getAttribute("data-tab");
-      Array.from(document.querySelectorAll(".tab-btn")).forEach(b => b.classList.remove("border-b-2","border-slate-900","text-slate-900"));
-      btn.classList.add("border-b-2","border-slate-900","text-slate-900");
-      Array.from(document.querySelectorAll(".tab-panel")).forEach(p => p.classList.add("hidden"));
-      document.getElementById("tab-" + tab)?.classList.remove("hidden");
+// === INIT ===
+window.addEventListener("DOMContentLoaded", () => {
+  // segmented controls
+  qsa(".segmented").forEach(seg => {
+    seg.addEventListener("click", e => {
+      const btn = e.target.closest(".seg"); if (!btn) return;
+      seg.querySelectorAll(".seg").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      state[seg.dataset.key] = btn.dataset.val;
+      updateUniformVisibility();
     });
-  })();
-  setupRun();
-  await refreshOutputs();
-  await refreshSummary();
+  });
+
+  updateUniformVisibility();
+  renderObjects();
+
+  // add object button
+  qs("#btn-add-object")?.addEventListener("click", ()=> openObjectPanel(null));
+  qs("#obj-cancel")?.addEventListener("click", ()=> closeObjectPanel());
+  qs("#obj-save")?.addEventListener("click", ()=> {
+    const o = collectObjectFromForm();
+    if (!o.name) { toast("Zadej název objektu","warn"); return; }
+    if (state.editIndex!=null) { state.objects[state.editIndex]=o; }
+    else { state.objects.push(o); }
+    closeObjectPanel(); renderObjects();
+  });
+
+  qs("#btn-run-step13")?.addEventListener("click", runStep13);
+  showBuildInfo();
 });

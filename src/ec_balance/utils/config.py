@@ -34,7 +34,7 @@ def _flat_kv(d: dict | None) -> List[tuple[str, str]]:
             v = ",".join(map(str, v))
         else:
             v = str(v)
-        out.append((str(k).replace("_", "-"), v))
+        out.append((str(k), v))
     return out
 
 def kv_to_argv(d_global: dict | None, d_step: dict | None) -> List[str]:

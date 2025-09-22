@@ -1,0 +1,4 @@
+cap_kwh,discharge_mwh,charge_shared_mwh,eq_cycles,site
+20.0,0.0,0.0,0.0,CENTRAL
+40.0,0.0,0.0,0.0,CENTRAL
+60.0,0.0,0.0,0.0,CENTRAL

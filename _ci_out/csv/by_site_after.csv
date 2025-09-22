@@ -1,0 +1,4 @@
+site,import_local_kwh,export_local_kwh,import_residual_kwh,export_residual_kwh,shared_in_kwh,shared_out_kwh
+Autobusák,14.0,3.0,10.053724053724052,0.0,4.092857142857143,3.0
+KD Orfeum,18.0,10.0,13.333333333333334,0.0,4.857142857142858,10.0
+Kabelovka,22.0,2.0,16.13186813186813,0.0,6.050000000000001,2.0

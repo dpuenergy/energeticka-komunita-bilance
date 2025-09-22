@@ -32,11 +32,11 @@ jobs:
 
       - name: Add build info
         run: |
-          echo "{ \"commit\": \"\", \"date\": \"2025-09-22T16:42:36Z\" }" > docs/build-info.json
+          echo "{ \"commit\": \"\", \"date\": \"2025-09-22T17:42:58Z\" }" > docs/build-info.json
 
       - name: Commit if changes
         run: |
-          if [ -n "" ]; then
+          if [ -n "M  docs/app.js A  docs/assets/logo-placeholder.backup.svg A  docs/assets/logo-placeholder.svg A  docs/assets/logo.svg M  docs/index.html M  docs/style.css" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add docs

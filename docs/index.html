@@ -3,133 +3,243 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>EC Balance â€“ UI (Step 3)</title>
+  <title>Komunitní energetika by DPU ENERGY</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="./style.css">
 </head>
 <body class="bg-slate-50 text-slate-900">
-  <header class="border-b bg-white">
-    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-      <h1 class="text-xl font-semibold">EC Balance â€“ jednoduchĂ© UI</h1>
-      <div class="text-xs text-slate-500">verze 1 â€˘ statickĂ© HTML+JS</div>
+  <!-- HEADER -->
+  <header class="sticky top-0 z-30 border-b bg-white/80 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
+      <img id="logo" src="./assets/logo.svg" alt="DPU ENERGY" class="h-8 w-8">
+      <h1 class="text-lg md:text-xl font-semibold tracking-tight">
+        Komunitní energetika <span class="text-brand-600">by DPU ENERGY</span>
+      </h1>
+      <span class="ml-auto text-xs text-slate-500 hidden sm:inline" id="build-info"></span>
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
-    <div class="border-b">
-      <nav class="flex gap-4" id="tabs">
-        <button data-tab="step3" class="tab-btn border-b-2 border-slate-900 text-slate-900 px-2 py-2 -mb-px">Step 3</button>
-        <button data-tab="outputs" class="tab-btn text-slate-500 hover:text-slate-800 px-2 py-2 -mb-px">VĂ˝stupy</button>
-        <button data-tab="summary" class="tab-btn text-slate-500 hover:text-slate-800 px-2 py-2 -mb-px">Summary (Step 3)</button>
-        <button data-tab="about" class="tab-btn text-slate-500 hover:text-slate-800 px-2 py-2 -mb-px">NastavenĂ­ & nĂˇpovÄ›da</button>
-      </nav>
-    </div>
+  <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+    <!-- INTRO -->
+    <section class="rounded-2xl border bg-white p-5">
+      <p class="text-sm text-slate-600">
+        Vítej. Tady nakonfiguruješ vstupy a objekty. Po potvrzení poběží backendové kroky (1→3) a výstupy uvidíš v další kartě.
+      </p>
+    </section>
 
-    <div id="alert" class="hidden rounded-lg border px-4 py-3 text-sm"></div>
-
-    <section id="tab-step3" class="tab-panel grid md:grid-cols-2 gap-6">
-      <div class="space-y-4">
-        <h2 class="text-lg font-semibold">Vstupy (CSV/XLSX)</h2>
-
-        <div class="space-y-2">
-          <label class="block text-sm font-medium">eano_after_pv_csv</label>
-          <input id="file-eano" type="file" accept=".csv,.xlsx" class="file-input">
+    <!-- CARDS GRID -->
+    <section class="grid lg:grid-cols-3 gap-6">
+      <!-- VSTUPY -->
+      <div class="lg:col-span-2 rounded-2xl border bg-white overflow-hidden">
+        <div class="flex items-center gap-2 px-5 py-4 border-b bg-gradient-to-r from-brand-50 to-transparent">
+          <!-- icon -->
+          <svg class="h-5 w-5 text-brand-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M3 7h18M3 12h18M3 17h18"/>
+            <path d="M7 3h10v4H7zM7 17h10v4H7z"/>
+          </svg>
+          <h2 class="font-semibold">Vstupy</h2>
+          <div class="ml-auto text-xs text-slate-500">krok 1</div>
         </div>
 
-        <div class="space-y-2">
-          <label class="block text-sm font-medium">eand_after_pv_csv</label>
-          <input id="file-eand" type="file" accept=".csv,.xlsx" class="file-input">
+        <div class="p-5 space-y-6">
+          <!-- Přepínače cenových režimů -->
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="setting">
+              <label class="setting-title">Komoditní složka</label>
+              <div class="segmented" data-key="commodityMode">
+                <button data-val="uniform" class="seg active">Všechna OM stejná cena</button>
+                <button data-val="per-object" class="seg">Každé OM vlastní cena</button>
+              </div>
+            </div>
+            <div class="setting">
+              <label class="setting-title">Distribuční složka</label>
+              <div class="segmented" data-key="distributionMode">
+                <button data-val="uniform" class="seg active">Všechna OM stejná cena</button>
+                <button data-val="per-object" class="seg">Každé OM vlastní cena</button>
+              </div>
+            </div>
+            <div class="setting">
+              <label class="setting-title">Prodej přetoků</label>
+              <div class="segmented" data-key="feedinMode">
+                <button data-val="uniform" class="seg active">Všechna OM stejná cena</button>
+                <button data-val="per-object" class="seg">Každé OM vlastní cena</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Jednotné ceny (zobrazí se pokud je uniform) -->
+          <div id="uniform-pricing" class="grid md:grid-cols-3 gap-4">
+            <div>
+              <label class="lbl">Jednotková cena komoditní (Kč/MWh)</label>
+              <input id="price_commodity_mwh" type="number" value="2200" class="inp">
+            </div>
+            <div>
+              <label class="lbl">Jednotková cena distribuční (Kč/MWh)</label>
+              <input id="price_distribution_mwh" type="number" value="1800" class="inp">
+            </div>
+            <div>
+              <label class="lbl">Jednotková cena přetoků (Kč/MWh)</label>
+              <input id="price_feed_in_mwh" type="number" value="1200" class="inp">
+            </div>
+          </div>
+
+          <!-- Objekty -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="font-medium">Objekty</h3>
+              <button id="btn-add-object" class="btn-primary">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 5v14M5 12h14"/>
+                </svg>
+                Přidat nový objekt
+              </button>
+            </div>
+
+            <!-- Panel přidání/úpravy -->
+            <div id="object-panel" class="hidden rounded-xl border bg-slate-50 p-4 space-y-3">
+              <div class="grid md:grid-cols-3 gap-3">
+                <div>
+                  <label class="lbl">Název objektu</label>
+                  <input id="obj-name" type="text" class="inp" placeholder="Např. ZŠ Nová">
+                </div>
+                <div>
+                  <label class="lbl">Roční spotřeba (MWh)</label>
+                  <input id="obj-annual-cons" type="number" step="0.01" class="inp">
+                </div>
+                <div class="flex items-end gap-2">
+                  <input id="obj-has-series-cons" type="checkbox" class="chk">
+                  <label for="obj-has-series-cons" class="lbl !mb-0">Mám hodinové/¼h spotřeby (nahraju)</label>
+                </div>
+              </div>
+
+              <div class="rounded-lg border bg-white p-3 space-y-3">
+                <div class="text-sm text-slate-600">Nemáš profil? Zadej roční/měsíční spotřeby a <strong>Profile generator</strong> je přepočítá na hodinové. (Zatím jen UI – bez napojení na backend.)</div>
+                <div class="grid md:grid-cols-2 gap-3">
+                  <div>
+                    <label class="lbl">Měsíční spotřeby (MWh) – CSV</label>
+                    <input id="obj-monthly-csv" type="file" accept=".csv" class="inp-file">
+                  </div>
+                  <div>
+                    <label class="lbl">Hodinové/¼h spotřeby – CSV</label>
+                    <input id="obj-series-cons-csv" type="file" accept=".csv" class="inp-file">
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid md:grid-cols-2 gap-3">
+                <div class="flex items-end gap-2">
+                  <input id="obj-has-gen" type="checkbox" class="chk">
+                  <label for="obj-has-gen" class="lbl !mb-0">Objekt má vlastní výrobu</label>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                  <div>
+                    <label class="lbl">FVE (kWp)</label>
+                    <input id="obj-fve" type="number" step="0.01" class="inp">
+                  </div>
+                  <div>
+                    <label class="lbl">KGJ (kWe)</label>
+                    <input id="obj-kgj" type="number" step="0.01" class="inp">
+                  </div>
+                  <div>
+                    <label class="lbl">Baterie (kWh)</label>
+                    <input id="obj-bat" type="number" step="0.01" class="inp">
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid md:grid-cols-2 gap-3">
+                <div>
+                  <label class="lbl">Akum. nádrž TUV (m³)</label>
+                  <input id="obj-tuv" type="number" step="0.01" class="inp">
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                  <div class="per-object-field">
+                    <label class="lbl">Cena komoditní (Kč/MWh)</label>
+                    <input id="obj-price-comm" type="number" step="1" class="inp">
+                  </div>
+                  <div class="per-object-field">
+                    <label class="lbl">Distribuce: režim</label>
+                    <select id="obj-dist-mode" class="inp">
+                      <option value="unit">Jednotková cena</option>
+                      <option value="tariff">Distribuční sazba</option>
+                    </select>
+                  </div>
+                  <div class="per-object-field">
+                    <label class="lbl">Cena přetoků (Kč/MWh)</label>
+                    <input id="obj-price-feedin" type="number" step="1" class="inp">
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button id="obj-save" class="btn-primary">Přidat objekt</button>
+                <button id="obj-cancel" class="btn-ghost">Zrušit</button>
+              </div>
+            </div>
+
+            <!-- Tabulka objektů -->
+            <div class="overflow-auto rounded-xl border bg-white">
+              <table class="w-full text-sm table-fixed">
+                <thead class="bg-slate-100 text-slate-700">
+                  <tr>
+                    <th class="th">Název</th>
+                    <th class="th">Roční spotřeba</th>
+                    <th class="th">Roční výroba</th>
+                    <th class="th">Cena komoditní</th>
+                    <th class="th">Cena distribuční</th>
+                    <th class="th">Distribuční sazba</th>
+                    <th class="th">Cena přetoků</th>
+                    <th class="th">FVE</th>
+                    <th class="th">KGJ</th>
+                    <th class="th">Baterie</th>
+                    <th class="th">Akum. nádrž</th>
+                    <th class="th">Spotřeby série</th>
+                    <th class="th">Výroby série</th>
+                    <th class="th w-28">Akce</th>
+                  </tr>
+                </thead>
+                <tbody id="objects-tbody" class="divide-y"></tbody>
+              </table>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <div class="space-y-2">
-          <label class="block text-sm font-medium">local_selfcons_csv</label>
-          <input id="file-local" type="file" accept=".csv,.xlsx" class="file-input">
+      <!-- PARAMETRY -->
+      <div class="rounded-2xl border bg-white h-fit">
+        <div class="px-5 py-4 border-b">
+          <h2 class="font-semibold">Parametry alokace</h2>
         </div>
-
-        <details class="text-sm text-slate-500">
-          <summary class="cursor-pointer">Do budoucna: kwp_by_site.csv</summary>
-          <p class="mt-2">UI je pĹ™ipravenĂ©; endpoint pro upload pouĹľijeme stejnÄ›, aĹľ bude potĹ™eba.</p>
-        </details>
-
-        <h2 class="text-lg font-semibold mt-6">Parametry</h2>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="p-5 space-y-4">
           <div>
-            <label class="block text-sm font-medium">price_commodity_mwh</label>
-            <input id="price_commodity_mwh" type="number" step="1" value="2200" class="text-input">
+            <label class="lbl">Maximální počet příjemců</label>
+            <input id="max_recipients" type="number" value="3" class="inp">
           </div>
           <div>
-            <label class="block text-sm font-medium">price_distribution_mwh</label>
-            <input id="price_distribution_mwh" type="number" step="1" value="1800" class="text-input">
-          </div>
-          <div>
-            <label class="block text-sm font-medium">price_feed_in_mwh</label>
-            <input id="price_feed_in_mwh" type="number" step="1" value="1200" class="text-input">
-          </div>
-          <div>
-            <label class="block text-sm font-medium">mode</label>
-            <select id="mode" class="text-input">
+            <label class="lbl">Verze alokačního klíče</label>
+            <select id="mode" class="inp">
               <option value="hybrid" selected>hybrid</option>
               <option value="proportional">proportional</option>
             </select>
           </div>
-          <div>
-            <label class="block text-sm font-medium">max_recipients</label>
-            <input id="max_recipients" type="number" step="1" value="3" class="text-input">
+          <div class="pt-2">
+            <button id="btn-run-step13" class="btn-brand w-full">Spustit krok 1→3</button>
+            <p class="text-xs text-slate-500 mt-2">Zatím volá jen Step 3 jako dřív; postupně přidáme Step 1/2. Po doběhu otevřeme záložku Výstupy.</p>
           </div>
-        </div>
-
-        <button id="run-step3" class="btn-primary mt-2">Spustit krok 3</button>
-        <div id="run-status" class="text-sm text-slate-500 mt-2"></div>
-      </div>
-
-      <div class="space-y-4">
-        <h2 class="text-lg font-semibold">VĂ˝sledek bÄ›hu</h2>
-        <div class="rounded-lg border bg-white p-3">
-          <div class="text-sm">Stav: <span id="run-ok" class="font-mono">â€“</span></div>
-          <div class="text-sm">Return code: <span id="run-rc" class="font-mono">â€“</span></div>
-        </div>
-
-        <div>
-          <h3 class="font-medium mb-2">NovÄ› vytvoĹ™enĂˇ CSV</h3>
-          <ul id="new-csv" class="list-disc pl-5 space-y-1"></ul>
-        </div>
-
-        <div>
-          <h3 class="font-medium mb-2">Log</h3>
-          <pre id="run-log" class="codebox h-64"></pre>
+          <div id="run-msg" class="text-xs text-slate-600"></div>
         </div>
       </div>
     </section>
 
-    <section id="tab-outputs" class="tab-panel hidden">
-      <h2 class="text-lg font-semibold mb-3">DostupnĂ© vĂ˝stupy</h2>
-      <div id="outputs-list" class="rounded-lg border bg-white p-3">
-        <div class="text-sm text-slate-500">NaÄŤĂ­tĂˇmâ€¦</div>
+    <!-- VÝSLEDKY / DALŠÍ STRÁNKA -->
+    <section class="rounded-2xl border bg-white p-5">
+      <div class="flex items-center gap-3">
+        <h2 class="font-semibold">Výstupy</h2>
+        <a href="./results.html" class="btn-ghost ml-auto">Otevřít stránku s výsledky</a>
       </div>
-    </section>
-
-    <section id="tab-summary" class="tab-panel hidden">
-      <h2 class="text-lg font-semibold mb-3">Summary (step3)</h2>
-      <pre id="summary-json" class="codebox h-96">â€”</pre>
-    </section>
-
-    <section id="tab-about" class="tab-panel hidden space-y-4">
-      <h2 class="text-lg font-semibold">NastavenĂ­ & nĂˇpovÄ›da</h2>
-      <div class="rounded-lg border bg-white p-4 space-y-2 text-sm">
-        <div>AktuĂˇlnĂ­ API: <code id="api-base" class="font-mono"></code></div>
-        <p>PĹ™epsat lze pĹ™es query param <code>?api=https://moje-backend-url</code>.</p>
-        <p>OtevĹ™Ă­t mĹŻĹľete jako <code>file://</code> nebo pod <code>/ui</code> na FastAPI.</p>
-      </div>
-      <div class="rounded-lg border bg-white p-4 text-sm space-y-2">
-        <h3 class="font-medium">Pozn.: pĹ™edpĹ™ipravenĂ© zĂˇloĹľky pro dalĹˇĂ­ kroky</h3>
-        <p>UI je psanĂ© bez frameworku, aby Ĺˇlo snadno rozĹˇĂ­Ĺ™it o Step 4a/4b/5a/5.</p>
-      </div>
+      <p class="text-sm text-slate-600 mt-1">Detailní výsledky přidáme sem do samostatné karty/stránky. Prozatím zůstává původní sekce „Výstupy“ na staré stránce.</p>
     </section>
   </main>
-
-  <footer class="text-center text-xs text-slate-500 py-6">
-    Â© EC Balance UI â€“ statickĂˇ verze
-  </footer>
 
   <script src="./config.js"></script>
   <script src="./app.js"></script>

@@ -18,18 +18,13 @@ dependencies = [
   "XlsxWriter>=3.2",
   "PyYAML>=6"
 ]
-[project.optional-dependencies]
-dev = [
-  "pytest>=8",
-  "ruff>=0.6",
-  "black>=24.0",
-  "mypy>=1.10",
-  "pre-commit>=3.8",
-  "numpy-financial>=1.0"
-]
 
 [project.scripts]
 ecb = "ec_balance.cli:main"
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6", "black>=24.0", "mypy>=1.10", "pre-commit>=3.8", "numpy-financial>=1.0"]
+api = ["fastapi>=0.110", "uvicorn[standard]>=0.29"]
 
 [tool.black]
 line-length = 100

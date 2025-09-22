@@ -1,12 +1,15 @@
+﻿# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (c) 2025 Kuba
+
 import argparse
 from pathlib import Path
 from typing import List, Tuple
 import pandas as pd
 import numpy as np
 
-# volitelně čteme safe_to_csv ze sharing_lib, ale máme i fallback
+# volitelnÄ› ÄŤteme safe_to_csv ze sharing_lib, ale mĂˇme i fallback
 try:
-    from .sharing_lib import safe_to_csv
+    from ..utils.sharing_lib import safe_to_csv
 except Exception:
     def safe_to_csv(df: pd.DataFrame, outdir: Path, name: str) -> Path:
         outdir = Path(outdir); (outdir / "csv").mkdir(parents=True, exist_ok=True)
@@ -17,7 +20,7 @@ def _read(path: str, cols_required=None) -> pd.DataFrame:
     if cols_required:
         missing = [c for c in cols_required if c not in df.columns]
         if missing:
-            raise ValueError(f"{path} chybí sloupce: {missing}")
+            raise ValueError(f"{path} chybĂ­ sloupce: {missing}")
     return df
 
 def _sum_by_hour_site(df: pd.DataFrame, value_col: str) -> pd.DataFrame:
@@ -38,8 +41,8 @@ def share_pool_degree_limited(
     max_recipients_per_from: int = 5,
     exclude_self: bool = True
 ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    """Proporční sdílení po hodinách s omezením počtu příjemců na zdroj."""
-    # agregace (robustně vůči duplicitám)
+    """ProporÄŤnĂ­ sdĂ­lenĂ­ po hodinĂˇch s omezenĂ­m poÄŤtu pĹ™Ă­jemcĹŻ na zdroj."""
+    # agregace (robustnÄ› vĹŻÄŤi duplicitĂˇm)
     imp = _sum_by_hour_site(eano_after, "import_after_kwh")
     exp = _sum_by_hour_site(eand_after, "export_after_kwh")
 
@@ -65,21 +68,21 @@ def share_pool_degree_limited(
 
         shared = min(total_I, total_E)
 
-        # cílové pokrytí a nabídka (proporční k popt./nabídce)
+        # cĂ­lovĂ© pokrytĂ­ a nabĂ­dka (proporÄŤnĂ­ k popt./nabĂ­dce)
         imp_share = (irow / total_I).fillna(0.0)
         exp_share = (erow / total_E).fillna(0.0)
-        desired_cover = shared * imp_share       # kolik by ideálně dostal každý to_site
-        supply_from   = shared * exp_share       # kolik by ideálně poslal každý from_site
+        desired_cover = shared * imp_share       # kolik by ideĂˇlnÄ› dostal kaĹľdĂ˝ to_site
+        supply_from   = shared * exp_share       # kolik by ideĂˇlnÄ› poslal kaĹľdĂ˝ from_site
 
         remaining_cover = desired_cover.copy()
         remaining_supply = supply_from.copy()
 
-        # iteruj zdroje od největší nabídky
+        # iteruj zdroje od nejvÄ›tĹˇĂ­ nabĂ­dky
         for s_from in remaining_supply.sort_values(ascending=False).index:
             s_supply = float(remaining_supply[s_from])
             if s_supply <= 1e-12:
                 continue
-            # kandidáti: největší zbývající poptávka, volitelně bez self
+            # kandidĂˇti: nejvÄ›tĹˇĂ­ zbĂ˝vajĂ­cĂ­ poptĂˇvka, volitelnÄ› bez self
             cand = remaining_cover.copy()
             if exclude_self and s_from in cand.index:
                 cand = cand.drop(index=s_from)
@@ -90,7 +93,7 @@ def share_pool_degree_limited(
             sel_total = float(selected.sum())
             if sel_total <= 1e-12:
                 continue
-            # rozděl s_supply proporcionálně na vybrané destinace
+            # rozdÄ›l s_supply proporcionĂˇlnÄ› na vybranĂ© destinace
             for s_to, rem in selected.items():
                 alloc = float(s_supply * (rem / sel_total))
                 if alloc <= 0:
@@ -141,7 +144,7 @@ def share_pool_degree_limited(
     return imp_wide, exp_wide, by_site_after, by_hour_after, allocations
 
 def main():
-    ap = argparse.ArgumentParser(description="Krok 3 – sdílení v komunitě (pool, degree-limit)")
+    ap = argparse.ArgumentParser(description="Krok 3 â€“ sdĂ­lenĂ­ v komunitÄ› (pool, degree-limit)")
     ap.add_argument("--eano_after_pv_csv", required=True)
     ap.add_argument("--eand_after_pv_csv", required=True)
     ap.add_argument("--local_selfcons_csv", required=True)
@@ -150,17 +153,17 @@ def main():
     ap.add_argument("--price_distribution_mwh", type=float, required=True)
     ap.add_argument("--price_feed_in_mwh", type=float, required=True)
     ap.add_argument("--mode", choices=["hybrid","proportional"], default="hybrid")
-    # aliasy: --max_receivers (původní) i --max_recipients (nový)
-    ap.add_argument("--max_receivers", type=int, default=None, help="Max počet příjemců na jeden zdroj v hodině (alias).")
-    ap.add_argument("--max_recipients", type=int, default=None, help="Max počet příjemců na jeden zdroj v hodině (alias).")
-    ap.add_argument("--allow_self_pair", action="store_true", help="Povolit alokaci na tentýž objekt (default: NE).")
-    ap.add_argument("--site_map_csv", default="", help="(Kompatibilita CLI – nevyužito zde)")
+    # aliasy: --max_receivers (pĹŻvodnĂ­) i --max_recipients (novĂ˝)
+    ap.add_argument("--max_receivers", type=int, default=None, help="Max poÄŤet pĹ™Ă­jemcĹŻ na jeden zdroj v hodinÄ› (alias).")
+    ap.add_argument("--max_recipients", type=int, default=None, help="Max poÄŤet pĹ™Ă­jemcĹŻ na jeden zdroj v hodinÄ› (alias).")
+    ap.add_argument("--allow_self_pair", action="store_true", help="Povolit alokaci na tentĂ˝Ĺľ objekt (default: NE).")
+    ap.add_argument("--site_map_csv", default="", help="(Kompatibilita CLI â€“ nevyuĹľito zde)")
     args = ap.parse_args()
 
-    # vyber hodnotu limitu z aliasů
+    # vyber hodnotu limitu z aliasĹŻ
     max_rec = args.max_recipients if args.max_recipients is not None else (args.max_receivers if args.max_receivers is not None else 5)
 
-    # načti vstupy (local_self zatím nevyužíváme přímo – je jen meta)
+    # naÄŤti vstupy (local_self zatĂ­m nevyuĹľĂ­vĂˇme pĹ™Ă­mo â€“ je jen meta)
     eano_after = _read(args.eano_after_pv_csv, cols_required=["datetime","site","import_after_kwh"])
     eand_after = _read(args.eand_after_pv_csv, cols_required=["datetime","site","export_after_kwh"])
     _ = _read(args.local_selfcons_csv)  # pro kontrolu existuje
@@ -178,7 +181,7 @@ def main():
     safe_to_csv(imp_wide, outroot, name="imp_wide")
     safe_to_csv(exp_wide, outroot, name="exp_wide")
 
-    print(f"[OK] Sharing hotovo. Limit příjemců = {max_rec}, self_pair = {args.allow_self_pair}")
+    print(f"[OK] Sharing hotovo. Limit pĹ™Ă­jemcĹŻ = {max_rec}, self_pair = {args.allow_self_pair}")
 
 if __name__ == "__main__":
     main()
