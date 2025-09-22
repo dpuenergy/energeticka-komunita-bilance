@@ -307,3 +307,94 @@ document.addEventListener("DOMContentLoaded", () => {
     bindToggleClass('excessToggle');
   });
 })();
+
+/* === EPC toggles: insert + bind === */
+(function(){
+  const MAP = [
+    { id: 'commodityToggle',    re: /(Komoditní\s+složka)/i, shared:'#shared-commodity-price',   per:'.commodity-price-per-object' },
+    { id: 'distributionToggle', re: /(Distribuční\s+složka)/i, shared:'#shared-distribution-price', per:'.distribution-price-per-object' },
+    { id: 'excessToggle',       re: /((Cena|Prodej)\s+přetoků)/i, shared:'#shared-excess-price',    per:'.excess-price-per-object' },
+  ];
+
+  function findByText(regex){
+    const candidates = document.querySelectorAll('h1,h2,h3,h4,label,div,span,p,th,td');
+    for (const el of candidates){
+      const t = (el.textContent || '').trim();
+      if (t && regex.test(t)) return el;
+    }
+    return null;
+  }
+
+  function placeEpcToggles(){
+    const staging = document.getElementById('toggles-staging');
+    if(!staging) return;
+    MAP.forEach(m=>{
+      const input = document.getElementById(m.id);
+      const field = input ? input.closest('.field') : null;
+      if(!input || !field) return;
+      if (field.dataset.mounted === '1') return;
+      const target = findByText(m.re);
+      if (target && target.parentNode){
+        field.style.display = ''; // show
+        target.parentNode.insertBefore(field, target);
+        field.dataset.mounted = '1';
+      } else {
+        // nech ve stagingu, pořád skryté; zkusíme znovu přes MutationObserver
+      }
+    });
+  }
+
+  function bindToggle(id, cfg){
+    const checkbox = document.getElementById(id);
+    if(!checkbox) return;
+    const field = checkbox.closest('.field');
+
+    function propagate(sharedSel, perSel){
+      const shared = document.querySelector(sharedSel);
+      if(!shared) return;
+      const list = Array.from(document.querySelectorAll(perSel));
+      list.forEach(i=>{
+        i.value = shared.value;
+        i.dispatchEvent(new Event('input', {bubbles:true}));
+        i.dispatchEvent(new Event('change', {bubbles:true}));
+      });
+    }
+
+    function apply(){
+      const on = !!checkbox.checked;
+      if(field) field.classList.toggle('on', on);
+      const shared = document.querySelector(cfg.shared);
+      const per = Array.from(document.querySelectorAll(cfg.per));
+
+      if (on){
+        if(shared){ shared.disabled = false; }
+        per.forEach(i=>{ i.disabled = true; });
+        if(shared){ propagate(cfg.shared, cfg.per); }
+      } else {
+        if(shared){ shared.disabled = true; }
+        per.forEach(i=>{ i.disabled = false; });
+      }
+    }
+
+    checkbox.addEventListener('change', apply);
+    // init (OFF => shared disabled, individuální povolena)
+    apply();
+
+    // když se mění shared hodnota a ON, kopíruj do per-object
+    const shared = document.querySelector(cfg.shared);
+    if(shared){
+      shared.addEventListener('input', ()=>{ if(checkbox.checked) propagate(cfg.shared, cfg.per); });
+      shared.addEventListener('change', ()=>{ if(checkbox.checked) propagate(cfg.shared, cfg.per); });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    placeEpcToggles();
+    // Kdyby UI bylo generované později JSem, sleduj DOM a zkoušej umístění znovu
+    const mo = new MutationObserver(()=>placeEpcToggles());
+    mo.observe(document.body, {childList:true, subtree:true});
+
+    MAP.forEach(m=> bindToggle(m.id, {shared:m.shared, per:m.per}));
+  });
+})();
+ /* === /EPC toggles === */
