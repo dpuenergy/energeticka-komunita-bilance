@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (c) 2025 Kuba
+
 # tools/fix_imports.py
 from __future__ import annotations
 import argparse, difflib, re, shutil

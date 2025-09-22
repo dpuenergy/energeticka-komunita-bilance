@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (c) 2025 Kuba
+
 # tools/fix_step4b_econ_override.py
 from __future__ import annotations
 from pathlib import Path

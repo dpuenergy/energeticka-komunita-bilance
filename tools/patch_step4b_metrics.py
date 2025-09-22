@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (c) 2025 Kuba
+
 # tools/patch_step4b_metrics.py
 from __future__ import annotations
 from pathlib import Path
