@@ -1,32 +1,70 @@
-﻿/* ====== BRAND (odhad dle webu: tmavá modrá + tyrkys) ====== */
-:root{
-  --brand-700:#0b3e7c;
-  --brand-600:#1156b0;
-  --brand-500:#1b6fe0;
-  --brand-50:#e8f1ff;
+﻿body {
+  font-family: Arial, sans-serif;
+  font-size: 13px; /* původně 14px, zmenšeno o 1 */
+  color: #222;
+  background-color: #fafafa;
+  margin: 0;
+  padding: 0;
 }
-.text-brand-600{ color: var(--brand-600); }
-.text-brand-700{ color: var(--brand-700); }
-.bg-brand-50{ background-color: var(--brand-50); }
-.border-brand-600{ border-color: var(--brand-600); }
-.btn-brand{ @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-white; background: linear-gradient(90deg,var(--brand-700),var(--brand-500)); }
-.btn-brand:disabled{ @apply opacity-60 cursor-not-allowed; }
-.btn-primary{ @apply inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm hover:bg-slate-50; }
-.btn-ghost{ @apply inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm hover:bg-slate-100; }
-.lbl{ @apply block text-xs font-medium text-slate-700 mb-1; }
-.inp{ @apply block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm; }
-.inp-file{ @apply block w-full text-sm; }
-.chk{ @apply h-4 w-4 rounded border-slate-300; }
-.th{ @apply text-left px-3 py-2 font-medium; }
-.td{ @apply px-3 py-2 align-top; }
 
-/* segmented control */
-.segmented{ @apply inline-flex rounded-lg border border-slate-300 bg-white p-1 text-xs; }
-.seg{ @apply px-2 py-1 rounded-md hover:bg-slate-50; }
-.seg.active{ background: var(--brand-50); color: var(--brand-700); border: 1px solid var(--brand-600); }
+label {
+  font-size: 13px;
+}
 
-/* toast */
-.toast{ position: fixed; bottom: 16px; right: 16px; z-index: 50; transform: translateY(8px); opacity: 0; transition: .2s; @apply text-sm rounded-lg border bg-white px-3 py-2 shadow; }
-.toast.info{ @apply border-blue-200 text-blue-900; background:#eff6ff; }
-.toast.warn{ @apply border-yellow-200 text-yellow-900; background:#fffbeb; }
-.toast.show{ transform: translateY(0); opacity: 1; }
+input[type="text"], input[type="number"], select, textarea {
+  font-size: 13px;
+  padding: 4px 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fdfdfd;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
+  border-color: #0066cc; /* modrá podle DPU */
+  background-color: #fff;
+  outline: none;
+}
+
+.unit {
+  font-size: 11px;
+  color: #555;
+  margin-left: 4px;
+}
+
+button, .btn {
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #0066cc;
+  background-color: #0066cc;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+button:hover, .btn:hover {
+  background-color: #004c99;
+}
+
+.toggle-group {
+  display: flex;
+  gap: 4px;
+}
+
+.toggle-btn {
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #eee;
+  color: #777;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toggle-btn.active {
+  border-color: #0066cc;
+  background-color: #fff;
+  color: #000;
+}
