@@ -273,3 +273,20 @@ document.addEventListener("DOMContentLoaded", () => {
   setupToggle("distributionToggle", "shared-distribution-price", "distribution-price-per-object");
   setupToggle("excessToggle", "shared-excess-price", "excess-price-per-object");
 });
+
+(function(){
+  function bindToggleColor(id){
+    const input = document.getElementById(id);
+    if(!input) return;
+    const labelText = input.closest('.field')?.querySelector('.toggle-text');
+    if(!labelText) return;
+    function apply(){ labelText.style.color = input.checked ? '#111827' : '#6b7280'; }
+    input.addEventListener('change', apply);
+    apply();
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    bindToggleColor('commodityToggle');
+    bindToggleColor('distributionToggle');
+    bindToggleColor('excessToggle');
+  });
+})();
