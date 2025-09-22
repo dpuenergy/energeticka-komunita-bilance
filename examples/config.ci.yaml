@@ -1,0 +1,46 @@
+﻿global:
+  outdir: ./_ci_out
+
+step3:
+  eano_after_pv_csv: ./examples/minidataset/eano_after_pv.csv
+  eand_after_pv_csv: ./examples/minidataset/eand_after_pv.csv
+  local_selfcons_csv: ./examples/minidataset/local_selfcons.csv
+  price_commodity_mwh: 2200
+  price_distribution_mwh: 1800
+  price_feed_in_mwh: 1200
+  mode: hybrid
+  max_recipients: 3
+
+step4a:
+  eano_after_pv_csv: ./examples/minidataset/eano_after_pv.csv
+  eand_after_pv_csv: ./examples/minidataset/eand_after_pv.csv
+  cap_kwh_per_kwp: 1.0
+  eta_c: 0.95
+  eta_d: 0.95
+
+step4b-econ:
+  csv_subdir: csv
+  price_commodity_mwh: 2200
+  price_distribution_mwh: 1800
+  price_feed_in_mwh: 1200
+  project_years: 15
+  discount_rate: 0.05
+  local_price_per_kwh: 11000
+  local_fixed_cost: 0
+  central_price_per_kwh: 9000
+  central_fixed_cost: 0
+
+step5a:
+  eano_after_pv_csv: ./examples/minidataset/eano_after_pv.csv
+  eand_after_pv_csv: ./examples/minidataset/eand_after_pv.csv
+  central_site: "KD Orfeum"
+  cap_kwh: 50
+  eta_c: 0.95
+  eta_d: 0.95
+
+step5:
+  by_hour_csv: ./_ci_out/csv/by_hour_after.csv
+  kwp_csv: ./examples/minidataset/kwp_by_site.csv
+  eta_c: 0.95
+  eta_d: 0.95
+  cap_kwh_list: "20,40,60"

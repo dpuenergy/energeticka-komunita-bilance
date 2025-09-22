@@ -1,24 +1,38 @@
-name: CI
+﻿name: CI
+
 on:
   push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
+        with: { python-version: '3.10' }
+      - run: python -m pip install --upgrade pip pre-commit
+      - run: pre-commit run -a
+
+  integ:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.10' }
+      - run: python -m pip install -e .
+      - name: Doctor
+        run: python -m ec_balance.utils.doctor --strict
+      - name: Mini dataset run
+        run: |
+          ecb --config examples/config.ci.yaml step3
+          ecb --config examples/config.ci.yaml step4a
+          ecb --config examples/config.ci.yaml step4b-econ
+          ecb --config examples/config.ci.yaml step5a
+          ecb --config examples/config.ci.yaml step5
+      - name: Sanity check
+        run: python -m ec_balance.utils.check --csv_dir _ci_out/csv --stage full
+      - uses: actions/upload-artifact@v4
         with:
-          python-version: '3.11'
-      - name: Install
-        run: |
-          python -m pip install --upgrade pip
-          pip install -e .[dev]
-      - name: Lint & Test
-        run: |
-          ruff check .
-          black --check .
-          pytest -q
+          name: ci-out-csv
+          path: _ci_out/csv/*.csv

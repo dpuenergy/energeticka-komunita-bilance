@@ -1,0 +1,137 @@
+﻿<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>EC Balance â€“ UI (Step 3)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body class="bg-slate-50 text-slate-900">
+  <header class="border-b bg-white">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <h1 class="text-xl font-semibold">EC Balance â€“ jednoduchĂ© UI</h1>
+      <div class="text-xs text-slate-500">verze 1 â€˘ statickĂ© HTML+JS</div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+    <div class="border-b">
+      <nav class="flex gap-4" id="tabs">
+        <button data-tab="step3" class="tab-btn border-b-2 border-slate-900 text-slate-900 px-2 py-2 -mb-px">Step 3</button>
+        <button data-tab="outputs" class="tab-btn text-slate-500 hover:text-slate-800 px-2 py-2 -mb-px">VĂ˝stupy</button>
+        <button data-tab="summary" class="tab-btn text-slate-500 hover:text-slate-800 px-2 py-2 -mb-px">Summary (Step 3)</button>
+        <button data-tab="about" class="tab-btn text-slate-500 hover:text-slate-800 px-2 py-2 -mb-px">NastavenĂ­ & nĂˇpovÄ›da</button>
+      </nav>
+    </div>
+
+    <div id="alert" class="hidden rounded-lg border px-4 py-3 text-sm"></div>
+
+    <section id="tab-step3" class="tab-panel grid md:grid-cols-2 gap-6">
+      <div class="space-y-4">
+        <h2 class="text-lg font-semibold">Vstupy (CSV/XLSX)</h2>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-medium">eano_after_pv_csv</label>
+          <input id="file-eano" type="file" accept=".csv,.xlsx" class="file-input">
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-medium">eand_after_pv_csv</label>
+          <input id="file-eand" type="file" accept=".csv,.xlsx" class="file-input">
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-sm font-medium">local_selfcons_csv</label>
+          <input id="file-local" type="file" accept=".csv,.xlsx" class="file-input">
+        </div>
+
+        <details class="text-sm text-slate-500">
+          <summary class="cursor-pointer">Do budoucna: kwp_by_site.csv</summary>
+          <p class="mt-2">UI je pĹ™ipravenĂ©; endpoint pro upload pouĹľijeme stejnÄ›, aĹľ bude potĹ™eba.</p>
+        </details>
+
+        <h2 class="text-lg font-semibold mt-6">Parametry</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium">price_commodity_mwh</label>
+            <input id="price_commodity_mwh" type="number" step="1" value="2200" class="text-input">
+          </div>
+          <div>
+            <label class="block text-sm font-medium">price_distribution_mwh</label>
+            <input id="price_distribution_mwh" type="number" step="1" value="1800" class="text-input">
+          </div>
+          <div>
+            <label class="block text-sm font-medium">price_feed_in_mwh</label>
+            <input id="price_feed_in_mwh" type="number" step="1" value="1200" class="text-input">
+          </div>
+          <div>
+            <label class="block text-sm font-medium">mode</label>
+            <select id="mode" class="text-input">
+              <option value="hybrid" selected>hybrid</option>
+              <option value="proportional">proportional</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium">max_recipients</label>
+            <input id="max_recipients" type="number" step="1" value="3" class="text-input">
+          </div>
+        </div>
+
+        <button id="run-step3" class="btn-primary mt-2">Spustit krok 3</button>
+        <div id="run-status" class="text-sm text-slate-500 mt-2"></div>
+      </div>
+
+      <div class="space-y-4">
+        <h2 class="text-lg font-semibold">VĂ˝sledek bÄ›hu</h2>
+        <div class="rounded-lg border bg-white p-3">
+          <div class="text-sm">Stav: <span id="run-ok" class="font-mono">â€“</span></div>
+          <div class="text-sm">Return code: <span id="run-rc" class="font-mono">â€“</span></div>
+        </div>
+
+        <div>
+          <h3 class="font-medium mb-2">NovÄ› vytvoĹ™enĂˇ CSV</h3>
+          <ul id="new-csv" class="list-disc pl-5 space-y-1"></ul>
+        </div>
+
+        <div>
+          <h3 class="font-medium mb-2">Log</h3>
+          <pre id="run-log" class="codebox h-64"></pre>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-outputs" class="tab-panel hidden">
+      <h2 class="text-lg font-semibold mb-3">DostupnĂ© vĂ˝stupy</h2>
+      <div id="outputs-list" class="rounded-lg border bg-white p-3">
+        <div class="text-sm text-slate-500">NaÄŤĂ­tĂˇmâ€¦</div>
+      </div>
+    </section>
+
+    <section id="tab-summary" class="tab-panel hidden">
+      <h2 class="text-lg font-semibold mb-3">Summary (step3)</h2>
+      <pre id="summary-json" class="codebox h-96">â€”</pre>
+    </section>
+
+    <section id="tab-about" class="tab-panel hidden space-y-4">
+      <h2 class="text-lg font-semibold">NastavenĂ­ & nĂˇpovÄ›da</h2>
+      <div class="rounded-lg border bg-white p-4 space-y-2 text-sm">
+        <div>AktuĂˇlnĂ­ API: <code id="api-base" class="font-mono"></code></div>
+        <p>PĹ™epsat lze pĹ™es query param <code>?api=https://moje-backend-url</code>.</p>
+        <p>OtevĹ™Ă­t mĹŻĹľete jako <code>file://</code> nebo pod <code>/ui</code> na FastAPI.</p>
+      </div>
+      <div class="rounded-lg border bg-white p-4 text-sm space-y-2">
+        <h3 class="font-medium">Pozn.: pĹ™edpĹ™ipravenĂ© zĂˇloĹľky pro dalĹˇĂ­ kroky</h3>
+        <p>UI je psanĂ© bez frameworku, aby Ĺˇlo snadno rozĹˇĂ­Ĺ™it o Step 4a/4b/5a/5.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="text-center text-xs text-slate-500 py-6">
+    Â© EC Balance UI â€“ statickĂˇ verze
+  </footer>
+
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

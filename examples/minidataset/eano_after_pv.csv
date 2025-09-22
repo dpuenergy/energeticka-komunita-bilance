@@ -1,0 +1,13 @@
+﻿datetime,site,import_after_kwh
+2024-01-01 00:00:00,Autobusák,5
+2024-01-01 01:00:00,Autobusák,4
+2024-01-01 02:00:00,Autobusák,3
+2024-01-01 03:00:00,Autobusák,2
+2024-01-01 00:00:00,KD Orfeum,6
+2024-01-01 01:00:00,KD Orfeum,4
+2024-01-01 02:00:00,KD Orfeum,5
+2024-01-01 03:00:00,KD Orfeum,3
+2024-01-01 00:00:00,Kabelovka,7
+2024-01-01 01:00:00,Kabelovka,6
+2024-01-01 02:00:00,Kabelovka,5
+2024-01-01 03:00:00,Kabelovka,4

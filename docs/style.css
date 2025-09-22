@@ -1,0 +1,5 @@
+﻿/* VolitelnĂ© drobnosti navĂ­c */
+.file-input { @apply block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm; }
+.text-input { @apply block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm; }
+.btn-primary { @apply inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-slate-900 text-white px-4 py-2 text-sm hover:bg-slate-800; }
+.codebox { @apply rounded-lg border bg-white p-3 overflow-auto text-xs leading-relaxed; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
