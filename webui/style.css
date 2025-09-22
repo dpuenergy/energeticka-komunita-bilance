@@ -113,3 +113,10 @@ input:checked + input:checked + .switch input:checked + .switch input:checked +
 .switch input:checked + .slider:before{transform:translateX(24px);}
 .toggle-text{font-size:13px;color:#6b7280;user-select:none;}
 .field.on .toggle-text{color:#111827;}
+
+
+/* EPC toggle text-left / switch / text-right */
+.field{display:flex;align-items:center;gap:12px;margin:8px 0;}
+.toggle-label{font-size:13px;color:#6b7280;user-select:none;white-space:nowrap;}
+.field:not(.on) .toggle-left{color:#111827;font-weight:600;} /* OFF = individuální aktivní */
+.field.on .toggle-right{color:#111827;font-weight:600;}      /* ON  = sdílená aktivní    */
