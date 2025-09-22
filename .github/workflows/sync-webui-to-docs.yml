@@ -30,6 +30,10 @@ jobs:
           rsync -av --delete webui/ docs/
           touch docs/.nojekyll
 
+      - name: Add build info
+        run: |
+          echo "{ \"commit\": \"\", \"date\": \"2025-09-22T16:42:36Z\" }" > docs/build-info.json
+
       - name: Commit if changes
         run: |
           if [ -n "" ]; then
