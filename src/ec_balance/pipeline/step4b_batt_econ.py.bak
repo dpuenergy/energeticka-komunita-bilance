@@ -1,0 +1,247 @@
+# -*- coding: utf-8 -*-
+import argparse
+from pathlib import Path
+import numpy as np
+import pandas as pd
+
+# ---------- util ----------
+
+def _load_by_hour(path: Path):
+    if not path or not path.exists():
+        return None
+    df = pd.read_csv(path)
+    if "datetime" in df.columns:
+        df["datetime"] = pd.to_datetime(df["datetime"], errors="coerce").dt.floor("h")
+        df = df.dropna(subset=["datetime"]).sort_values("datetime").reset_index(drop=True)
+    return df
+
+def _pick_col(df: pd.DataFrame, prefer):
+    for c in prefer:
+        if c in df.columns:
+            return c
+    low = {c.lower(): c for c in df.columns}
+    for key in prefer:
+        k = key.lower()
+        for lc, orig in low.items():
+            if all(tok in lc for tok in k.split("_")):
+                return orig
+    return None
+
+def _import_export_columns(df: pd.DataFrame, kind: str):
+    """Vrátí tuple (imp_col, exp_col, shared_in_col|None) pro baseline nebo battery."""
+    if kind == "baseline":
+        imp = _pick_col(df, ["import_residual_kwh", "import_residual", "import"])
+        exp = _pick_col(df, ["export_residual_kwh", "export_residual", "export"])
+        sh  = _pick_col(df, ["shared_received_kwh", "shared_in_kwh"])
+    else:
+        imp = _pick_col(df, ["import_after_bat_kwh","import_after_batt_kwh","import_after","import"])
+        exp = _pick_col(df, ["export_after_bat_kwh","export_after_batt_kwh","export_after","export"])
+        sh  = _pick_col(df, ["shared_received_after_bat_kwh","shared_received_kwh_after_bat","shared_received_kwh","shared_in_kwh"])
+    return imp, exp, sh
+
+def _total_cost(df: pd.DataFrame, p_com_mwh, p_dist_mwh, p_feed_mwh, kind: str):
+    """Spočítá celkovou cenu přes hodiny (kč)."""
+    imp_col, exp_col, sh_col = _import_export_columns(df, kind)
+    if imp_col is None or exp_col is None:
+        return 0.0
+    k_use  = (p_com_mwh + p_dist_mwh) / 1000.0
+    k_dist = p_dist_mwh / 1000.0
+    k_feed = p_feed_mwh / 1000.0
+
+    imp = pd.to_numeric(df[imp_col], errors="coerce").fillna(0.0)
+    exp = pd.to_numeric(df[exp_col], errors="coerce").fillna(0.0)
+    cost = imp * k_use - exp * k_feed
+    if sh_col and sh_col in df.columns:
+        sh_in = pd.to_numeric(df[sh_col], errors="coerce").fillna(0.0)
+        cost = cost + sh_in * k_dist
+    return float(cost.sum())
+
+def _battery_metrics(bh: pd.DataFrame | None, cap_total_kwh: float | None):
+    if bh is None or bh.empty:
+        return dict(efc=0.0, cycles_per_year=0.0, median_cycle_h=0.0, lifetime_years_at_5000=np.inf, capacity_factor=0.0)
+    disc = pd.to_numeric(bh.get("consumption_from_storage_kwh", 0.0), errors="coerce").fillna(0.0)
+    soc  = pd.to_numeric(bh.get("soc_kwh", 0.0), errors="coerce").fillna(0.0)
+    cap  = float(cap_total_kwh or 0.0)
+    if cap <= 0:
+        cap = float(soc.max() or 1e-9)
+    efc = float(disc.sum() / max(cap, 1e-9))                   # equivalent full cycles (součet výdeje / kapacita)
+    hours = max(1, len(bh))
+    cycles_per_year = efc * (8760.0 / hours)
+
+    # délka cyklu – od minima SOC k minimu SOC (hrubá metrika)
+    s = soc.to_numpy()
+    mins = []
+    for i in range(1, len(s) - 1):
+        if s[i] <= s[i - 1] and s[i] <= s[i + 1]:
+            mins.append(i)
+    lengths = [mins[j+1] - mins[j] for j in range(len(mins)-1) if mins[j+1] - mins[j] > 0]
+    median_cycle_h = float(np.median(lengths)) if lengths else 0.0
+
+    lifetime_years = (5000.0 / cycles_per_year) if cycles_per_year > 0 else np.inf
+    cap_factor = float(disc.sum() / (cap * 8760.0)) if cap > 0 else 0.0
+    return dict(efc=efc, cycles_per_year=cycles_per_year, median_cycle_h=median_cycle_h,
+                lifetime_years_at_5000=lifetime_years, capacity_factor=cap_factor)
+
+def discounted_cashflow(cashflows, rate):
+    fac = np.array([(1.0 / (1.0 + rate) ** t) for t in range(len(cashflows))], dtype=float)
+    return float(np.sum(np.array(cashflows, dtype=float) * fac))
+
+def irr(cashflows):
+    try:
+        import numpy_financial as npf
+        return float(npf.irr(np.array(cashflows, dtype=float)))
+    except Exception:
+        pass
+    # jednoduchá binární/prohledávací záloha
+    def npv(r): return discounted_cashflow(cashflows, r)
+    lo, hi = -0.9, 1.5
+    f_lo, f_hi = npv(lo), npv(hi)
+    if f_lo * f_hi > 0:
+        grid = np.linspace(-0.9, 1.5, 481)
+        vals = np.array([npv(r) for r in grid])
+        return float(grid[int(np.argmin(np.abs(vals)))])
+    for _ in range(100):
+        mid = (lo + hi) / 2.0
+        f_mid = npv(mid)
+        if abs(f_mid) < 1e-6:
+            return float(mid)
+        if f_lo * f_mid < 0:
+            hi, f_hi = mid, f_mid
+        else:
+            lo, f_lo = mid, f_mid
+    return float((lo + hi) / 2.0)
+
+def discounted_payback(cashflows, rate):
+    acc = 0.0
+    for t, cf in enumerate(cashflows):
+        acc += cf / ((1.0 + rate) ** t)
+        if acc >= 0:
+            return t
+    return np.inf
+
+# ---------- main ----------
+
+def main():
+    ap = argparse.ArgumentParser(description="Ekonomika baterek (NPV / IRR / Payback) pro S4a a S4b oproti S3.")
+    ap.add_argument("--outdir", required=True, help="Kořen projektu, kam se píše i csv_subdir.")
+    ap.add_argument("--csv_subdir", default="csv")
+    ap.add_argument("--price_commodity_mwh", type=float, required=True)
+    ap.add_argument("--price_distribution_mwh", type=float, required=True)
+    ap.add_argument("--price_feed_in_mwh", type=float, required=True)
+    ap.add_argument("--project_years", type=int, default=15)
+    ap.add_argument("--discount_rate", type=float, default=0.03)
+    ap.add_argument("--batt_cycle_life", type=float, default=5000.0)  # zatím jen informativní
+    ap.add_argument("--central_price_per_kwh", type=float, default=0.0)
+    ap.add_argument("--central_fixed_cost", type=float, default=0.0)
+    ap.add_argument("--local_price_per_kwh", type=float, default=0.0)
+    ap.add_argument("--local_fixed_cost", type=float, default=0.0)
+    args = ap.parse_args()
+
+    outdir = Path(args.outdir)
+    csvdir = outdir / args.csv_subdir
+
+    # --- baseline S3 ---
+    s3 = _load_by_hour(csvdir / "by_hour_after.csv")
+    if s3 is None or s3.empty:
+        raise SystemExit("[ERR] Nenalezen by_hour_after.csv – nejdřív spusť krok 3 (sdílení).")
+
+    base_cost = _total_cost(s3, args.price_commodity_mwh, args.price_distribution_mwh, args.price_feed_in_mwh, "baseline")
+    hours = len(s3)
+    year_factor = 8760.0 / max(1, hours)  # přepočet součtu hodin na roční ekvivalent
+
+    # --- local battery (S4a) ---
+    local_hour = _load_by_hour(csvdir / "by_hour_after_bat_local.csv")
+    bh_local   = local_hour  # pro metriky (soc/consumption_from_storage_kwh)
+    local_rows = []
+    if local_hour is not None and not local_hour.empty:
+        local_cost = _total_cost(local_hour, args.price_commodity_mwh, args.price_distribution_mwh, args.price_feed_in_mwh, "battery")
+        # kapacita: preferuj součet z metadat, jinak odhad ze SOC
+        cap_local = None
+        meta_local = csvdir / "bat_local_cap_by_site.csv"
+        if meta_local.exists():
+            try:
+                tmp = pd.read_csv(meta_local)
+                if {"site","cap_kwh"}.issubset(tmp.columns):
+                    cap_local = float(pd.to_numeric(tmp["cap_kwh"], errors="coerce").fillna(0.0).sum())
+            except Exception:
+                pass
+        if cap_local is None:
+            soc_col = _pick_col(local_hour, ["soc_kwh","state_of_charge"])
+            cap_local = float(pd.to_numeric(local_hour.get(soc_col, pd.Series([0.0])), errors="coerce").fillna(0.0).max() or 0.0)
+
+        capex_local = float(cap_local * args.local_price_per_kwh + args.local_fixed_cost)
+        yearly_saving = (base_cost - local_cost) * year_factor
+        cfs = [-capex_local] + [yearly_saving] * args.project_years
+
+        bm = _battery_metrics(bh_local, cap_local)
+        local_rows.append({
+            "variant": "local",
+            "cap_kwh": cap_local,
+            "capex_kcz": capex_local,
+            "yearly_saving_kcz": yearly_saving,
+            "payback_years": (capex_local / yearly_saving) if yearly_saving > 0 else np.inf,
+            "discounted_payback_years": discounted_payback(cfs, args.discount_rate),
+            "NPV_kcz": discounted_cashflow(cfs, args.discount_rate),
+            "IRR": irr(cfs),
+            "efc": bm["efc"],
+            "cycles_per_year": bm["cycles_per_year"],
+            "median_cycle_h": bm["median_cycle_h"],
+            "lifetime_years_at_5000": bm["lifetime_years_at_5000"],
+            "capacity_factor": bm["capacity_factor"],
+        })
+        pd.DataFrame(local_rows).to_csv(csvdir / "local_econ_long.csv", index=False)
+        pd.DataFrame(local_rows).to_csv(csvdir / "local_econ_best.csv", index=False)
+        print(f"[OK] local_econ_long: {csvdir / 'local_econ_long.csv'}")
+        print(f"[OK] local_econ_best: {csvdir / 'local_econ_best.csv'}")
+    else:
+        print("[WARN] Nenalezen by_hour_after_bat_local.csv – S4a bude vynechána.")
+
+    # --- central battery (S4b) ---
+    centr_hour = _load_by_hour(csvdir / "by_hour_after_bat_central.csv")
+    bh_centr   = centr_hour
+    central_rows = []
+    if centr_hour is not None and not centr_hour.empty:
+        central_cost = _total_cost(centr_hour, args.price_commodity_mwh, args.price_distribution_mwh, args.price_feed_in_mwh, "battery")
+        # kapacita: meta nebo SOC
+        cap_central = None
+        meta_c = csvdir / "bat_central_meta.csv"
+        if meta_c.exists():
+            try:
+                tmp = pd.read_csv(meta_c)
+                if "cap_kwh" in tmp.columns:
+                    cap_central = float(pd.to_numeric(tmp["cap_kwh"].iloc[0], errors="coerce") or 0.0)
+            except Exception:
+                pass
+        if cap_central is None:
+            soc_col = _pick_col(centr_hour, ["soc_kwh","state_of_charge"])
+            cap_central = float(pd.to_numeric(centr_hour.get(soc_col, pd.Series([0.0])), errors="coerce").fillna(0.0).max() or 0.0)
+
+        capex_central = float(cap_central * args.central_price_per_kwh + args.central_fixed_cost)
+        yearly_saving = (base_cost - central_cost) * year_factor
+        cfs = [-capex_central] + [yearly_saving] * args.project_years
+
+        bm = _battery_metrics(bh_centr, cap_central)
+        central_rows.append({
+            "variant": "central",
+            "cap_kwh": cap_central,
+            "capex_kcz": capex_central,
+            "yearly_saving_kcz": yearly_saving,
+            "payback_years": (capex_central / yearly_saving) if yearly_saving > 0 else np.inf,
+            "discounted_payback_years": discounted_payback(cfs, args.discount_rate),
+            "NPV_kcz": discounted_cashflow(cfs, args.discount_rate),
+            "IRR": irr(cfs),
+            "efc": bm["efc"],
+            "cycles_per_year": bm["cycles_per_year"],
+            "median_cycle_h": bm["median_cycle_h"],
+            "lifetime_years_at_5000": bm["lifetime_years_at_5000"],
+            "capacity_factor": bm["capacity_factor"],
+        })
+        pd.DataFrame(central_rows).to_csv(csvdir / "central_econ_long.csv", index=False)
+        pd.DataFrame(central_rows).to_csv(csvdir / "central_econ_best.csv", index=False)
+        print(f"[OK] central_econ_long: {csvdir / 'central_econ_long.csv'}")
+        print(f"[OK] central_econ_best: {csvdir / 'central_econ_best.csv'}")
+    else:
+        print("[WARN] Nenalezen by_hour_after_bat_central.csv – S4b bude vynechána.")
+
+if __name__ == "__main__":
+    main()

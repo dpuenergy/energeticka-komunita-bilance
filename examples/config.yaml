@@ -1,0 +1,10 @@
+timezone: Europe/Prague
+timestep_minutes: 60
+allocation_rule: share
+members:
+  - id: M1
+    name: Obecní úřad
+    share: 0.5
+  - id: M2
+    name: Škola
+    share: 0.5
