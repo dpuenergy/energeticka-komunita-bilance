@@ -1,10 +1,36 @@
-timezone: Europe/Prague
-timestep_minutes: 60
-allocation_rule: share
-members:
-  - id: M1
-    name: Obecní úřad
-    share: 0.5
-  - id: M2
-    name: Škola
-    share: 0.5
+﻿global:
+  outdir: ./out
+  csv_subdir: csv
+  price_commodity_mwh: 2200
+  price_distribution_mwh: 1800
+  price_feed_in_mwh: 1200
+
+step3:
+  # cesty k výstupům ze step2 (máš je už v out/csv)
+  eano_after_pv_csv: ./out/csv/eano_after_pv.csv
+  eand_after_pv_csv: ./out/csv/eand_after_pv.csv
+  local_selfcons_csv: ./out/csv/local_selfcons.csv
+  mode: hybrid
+  max_recipients: 5
+
+step4a:
+  cap_kwh_per_kwp: 1.0
+  eta_c: 0.95
+  eta_d: 0.95
+
+step5a:
+  central_site: CENTRAL
+  cap_kwh: 200
+  eta_c: 0.95
+  eta_d: 0.95
+
+step4b-econ:
+  project_years: 15
+  discount_rate: 0.05
+  local_price_per_kwh: 11000
+  local_fixed_cost: 0
+  central_price_per_kwh: 9000
+  central_fixed_cost: 0
+
+step6:
+  scenarios: "s1,s2,s3,s4a,s4b"

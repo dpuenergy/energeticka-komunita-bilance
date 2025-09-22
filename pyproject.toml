@@ -15,9 +15,9 @@ dependencies = [
   "numpy>=1.26",
   "pydantic>=2.8",
   "click>=8.1",
-  "xlsxwriter>=3.2"
+  "XlsxWriter>=3.2",
+  "PyYAML>=6"
 ]
-
 [project.optional-dependencies]
 dev = [
   "pytest>=8",
