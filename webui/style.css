@@ -70,6 +70,13 @@ button:hover, .btn:hover {
 }
 input:checked + input:checked + .switch input:checked + .switch input:checked +
 
+.switch input:checked + .switch input:checked + .switch:hover .switch:has(input:focus-visible) .toggle-text{
+  font-size:13px;
+  color:#6b7280;
+  user-select:none;
+}
+.switch input:checked ~ .toggle-text{ color:#111827; }
+
 .field{
   display:flex;align-items:center;gap:8px;margin:6px 0;
 }
