@@ -213,3 +213,63 @@ window.addEventListener("DOMContentLoaded", () => {
   qs("#btn-run-step13")?.addEventListener("click", runStep13);
   showBuildInfo();
 });
+// === Toggle: Komoditní složka ===
+document.addEventListener("DOMContentLoaded", () => {
+  const toggle = document.getElementById("commodityToggle");
+  if (!toggle) return;
+
+  toggle.addEventListener("change", () => {
+    const sharedField = document.getElementById("shared-commodity-price");
+    const perObjectFields = document.querySelectorAll(".commodity-price-per-object");
+
+    if (toggle.checked) {
+      // režim: všichni stejná cena
+      if (sharedField) sharedField.style.display = "block";
+      perObjectFields.forEach(f => f.style.display = "none");
+    } else {
+      // režim: každé OM vlastní cena
+      if (sharedField) sharedField.style.display = "none";
+      perObjectFields.forEach(f => f.style.display = "block");
+    }
+  });
+
+  // vyvoláme při startu
+  toggle.dispatchEvent(new Event("change"));
+});
+
+function setupToggle(toggleId, sharedId, perObjectClass) {
+  const toggle = document.getElementById(toggleId);
+  const shared = document.getElementById(sharedId);
+  const perObjects = document.querySelectorAll("." + perObjectClass);
+
+  if (!toggle || !shared || perObjects.length === 0) return;
+
+  function applyState() {
+    if (toggle.checked) {
+      shared.disabled = false;
+      perObjects.forEach(el => {
+        el.disabled = true;
+        el.value = shared.value; // přenes hodnotu
+      });
+    } else {
+      shared.disabled = true;
+      perObjects.forEach(el => el.disabled = false);
+    }
+  }
+
+  toggle.addEventListener("change", applyState);
+  shared.addEventListener("input", () => {
+    if (toggle.checked) {
+      perObjects.forEach(el => el.value = shared.value);
+    }
+  });
+
+  // init při načtení stránky
+  applyState();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupToggle("commodityToggle", "shared-commodity-price", "commodity-price-per-object");
+  setupToggle("distributionToggle", "shared-distribution-price", "distribution-price-per-object");
+  setupToggle("excessToggle", "shared-excess-price", "excess-price-per-object");
+});
