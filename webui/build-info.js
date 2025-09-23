@@ -1,4 +1,4 @@
-﻿(function(){
+(function(){
   async function setBuildInfo() {
     const el = document.getElementById("build-info");
     if (!el) return;

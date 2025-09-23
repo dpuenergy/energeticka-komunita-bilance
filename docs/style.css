@@ -1,15 +1,15 @@
 ﻿/* ====== BRAND (odhad dle webu: tmavá modrá + tyrkys) ====== */
 /* === BRAND: DPU ENERGY (blue) === */
 /* === BRAND: DPU ENERGY (two-tone blue) === */
+/* === BRAND: DPU ENERGY (two-tone) === */
 :root{
-  --brand-dark: #272660;  /* tmavá modrá (akcent) */
-  --brand-light:#cee0f0;  /* světlá modrá (bg/hover/ring) */
+  --brand-dark: #272660;   /* tmavá modrá */
+  --brand-light:#cee0f0;   /* světle modrá */
 
-  /* aliasy pro komponenty */
+  /* aliasy pro komponenty (už nic mimo tyto dvě barvy) */
   --brand: var(--brand-dark);
-  --brand-hover: var(--brand-dark);     /* držíme jednu barvu, hover řešíme světlejším bg / ringem */
   --brand-ring: var(--brand-light);
-  --brand-ghost: #e2e8f0;               /* šedý okraj pro ghost */
+  --brand-ghost: #e2e8f0;  /* šedý okraj pro ghost */
 }
 .text-brand-600{ color: var(--brand-600); }
 .text-brand-700{ color: var(--brand-700); }
@@ -52,20 +52,20 @@ html { font-size: 15px; }
 .inp, input[type="number"], input[type="text"], select {
   border: 1px solid #e2e8f0; background: #f8fafc; border-radius: .625rem;
 }
-.inp:focus, input:focus, select:focus { outline: none; border-color: #60a5fa; background: #ffffff; }
+.inp:focus, input:focus, select:focus { outline: none; border-color: #272660; background: #ffffff; }
 
 /* sjednocení tlačítek (brand barvy) */
 /* === BRAND: DPU ENERGY (blue) === */
 /* === BRAND: DPU ENERGY (two-tone blue) === */
+/* === BRAND: DPU ENERGY (two-tone) === */
 :root{
-  --brand-dark: #272660;  /* tmavá modrá (akcent) */
-  --brand-light:#cee0f0;  /* světlá modrá (bg/hover/ring) */
+  --brand-dark: #272660;   /* tmavá modrá */
+  --brand-light:#cee0f0;   /* světle modrá */
 
-  /* aliasy pro komponenty */
+  /* aliasy pro komponenty (už nic mimo tyto dvě barvy) */
   --brand: var(--brand-dark);
-  --brand-hover: var(--brand-dark);     /* držíme jednu barvu, hover řešíme světlejším bg / ringem */
   --brand-ring: var(--brand-light);
-  --brand-ghost: #e2e8f0;               /* šedý okraj pro ghost */
+  --brand-ghost: #e2e8f0;  /* šedý okraj pro ghost */
 }
 .btn-primary, .btn-brand {
   background: var(--brand); color:#fff; border-radius:.625rem; padding:.55rem .9rem; font-weight:600;
@@ -84,7 +84,7 @@ html { font-size: 15px; }
   background:#f1f5f9; color:#475569;
 }
 .segmented .seg.active {
-  background:#ffffff; color:#0f172a; border-color:#3b82f6; /* modrý border */
+  background:#ffffff; color:#0f172a; border-color:#272660; /* modrý border */
   box-shadow:0 1px 2px rgba(0,0,0,.06);
 }
 /* --- KROK1: typografie, jednotky, vstupy, tlačítka, toggles --- */
@@ -99,20 +99,20 @@ html { font-size: 15px; }
 .inp, input[type="number"], input[type="text"], select {
   border: 1px solid #e2e8f0; background: #f8fafc; border-radius: .625rem;
 }
-.inp:focus, input:focus, select:focus { outline: none; border-color: #60a5fa; background: #ffffff; }
+.inp:focus, input:focus, select:focus { outline: none; border-color: #272660; background: #ffffff; }
 
 /* brand paleta */
 /* === BRAND: DPU ENERGY (blue) === */
 /* === BRAND: DPU ENERGY (two-tone blue) === */
+/* === BRAND: DPU ENERGY (two-tone) === */
 :root{
-  --brand-dark: #272660;  /* tmavá modrá (akcent) */
-  --brand-light:#cee0f0;  /* světlá modrá (bg/hover/ring) */
+  --brand-dark: #272660;   /* tmavá modrá */
+  --brand-light:#cee0f0;   /* světle modrá */
 
-  /* aliasy pro komponenty */
+  /* aliasy pro komponenty (už nic mimo tyto dvě barvy) */
   --brand: var(--brand-dark);
-  --brand-hover: var(--brand-dark);     /* držíme jednu barvu, hover řešíme světlejším bg / ringem */
   --brand-ring: var(--brand-light);
-  --brand-ghost: #e2e8f0;               /* šedý okraj pro ghost */
+  --brand-ghost: #e2e8f0;  /* šedý okraj pro ghost */
 }
 
 /* sjednocení tlačítek */
@@ -133,7 +133,7 @@ html { font-size: 15px; }
   background:#f1f5f9; color:#475569; /* neaktivní: šedý text + světle šedé pozadí */
 }
 .segmented .seg.active {
-  background:#ffffff; color:#0f172a; border-color:#3b82f6; /* aktivní: bílý bg, černý text, modrý border */
+  background:#ffffff; color:#0f172a; border-color:#272660; /* aktivní: bílý bg, černý text, modrý border */
   box-shadow:0 1px 2px rgba(0,0,0,.06);
 }
 
@@ -198,3 +198,55 @@ html { font-size: 15px; }
   background:#fff; color:#0f172a; border-color: var(--brand);
   box-shadow:0 0 0 2px var(--brand-light);
 }
+
+/* === BRAND WIRING (strict two-tone) === */
+
+/* tlačítka */
+.btn-primary, .btn-brand{
+  background: var(--brand); color:#fff;
+  border:1px solid var(--brand); border-radius:.625rem; padding:.55rem .9rem; font-weight:600;
+  box-shadow:0 1px 2px rgba(0,0,0,.06);
+}
+.btn-primary:hover, .btn-brand:hover{
+  background: var(--brand); border-color: var(--brand);
+  box-shadow:0 0 0 4px var(--brand-light); /* světlé modré halo místo jiné výplně */
+}
+.btn-ghost{
+  background:#fff; color:#0f172a; border:1px solid var(--brand-ghost);
+  border-radius:.625rem; padding:.5rem .8rem;
+}
+.btn-ghost:hover{ background:#f8fafc; }
+
+/* focus ring na inputs/selects */
+.inp, input[type="number"], input[type="text"], select { border:1px solid #e2e8f0; background:#f8fafc; border-radius:.625rem; }
+.inp:focus, input:focus, select:focus{
+  outline:2px solid var(--brand-ring); outline-offset:2px;
+  border-color: var(--brand-ring); background:#fff;
+}
+
+/* toggles */
+.segmented{
+  display:inline-flex; background: var(--brand-light); border:1px solid var(--brand-light);
+  border-radius:9999px; padding:4px; gap:4px;
+}
+.segmented .seg{
+  padding:.5rem .85rem; border-radius:9999px; font-size:.875rem; line-height:1;
+  background:#f8fafc; color:#475569; border:1px solid transparent;
+}
+.segmented .seg.active{
+  background:#fff; color:#0f172a; border-color: var(--brand); box-shadow:0 0 0 2px var(--brand-light);
+}
+
+/* byline v nadpisu */
+.brand-by{ color: var(--brand); font-weight:600; }
+/* --- KROK2: objekty & vstupy --- */
+.field-wide { min-width: 20rem; }     /* větší "Název objektu" */
+.field-narrow { max-width: 10rem; }   /* užší čísla */
+.help-dim { color:#475569; opacity:.9; font-size:.85rem; }
+
+.panel-soft { background:#f8fafc; border:1px solid #e2e8f0; border-radius:.75rem; padding: .75rem; }
+.icon-btn { display:inline-flex; align-items:center; gap:.35rem; padding:.35rem .6rem; border:1px solid var(--brand-ghost); border-radius:.5rem; background:#fff; }
+.icon-btn:hover { box-shadow:0 0 0 3px var(--brand-light); }
+
+.month-grid { display:grid; grid-template-columns: 1fr 1fr; gap:.5rem .75rem; }
+.month-grid label { color:#475569; font-size:.875rem; }

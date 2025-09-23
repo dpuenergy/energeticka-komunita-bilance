@@ -88,12 +88,3 @@
   });
   mo.observe(document.documentElement, { childList:true, subtree:true });
 })();
-/* debug: log segmented keys after prune/dedupe */
-(() => {
-  function logSeg(where){
-    const arr=[...document.querySelectorAll(".segmented")].map(el=>el.dataset.key||"(no-key)");
-    console.log("[segmented:"+where+"]", arr);
-  }
-  document.addEventListener("DOMContentLoaded", ()=>logSeg("DOMContentLoaded"));
-  setTimeout(()=>logSeg("after 500ms"), 500);
-})();

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Komunitní energetika by DPU ENERGY</title>
+  <title>Komunitní energetika <span class="brand-by">by DPU ENERGY</span></title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="./style.css">
 </head>
@@ -103,11 +103,31 @@
               <div class="grid md:grid-cols-3 gap-3">
                 <div>
                   <label class="lbl">Název objektu</label>
-                  <input id="obj-name" type="text" class="inp" placeholder="Např. ZŠ Nová">
+                  <input id="obj-name" type="text" class="inp field-wide" placeholder="Např. ZŠ Nová">
                 </div>
                 <div>
                   <label class="lbl">Roční spotřeba (MWh)</label>
-                  <input id="obj-annual-cons" type="number" step="0.01" class="inp">
+                  <input id="obj-annual-cons" type="number" step="0.01" class="inp field-narrow">
+<button id="btn-monthly-panel" type="button" class="icon-btn" title="Měsíční spotřeby">
+  <span>➕</span><span>Měsíční</span>
+</button>
+<div id="obj-monthly-panel" class="panel-soft hidden" aria-hidden="true">
+  <div class="help-dim mb-2">Zadej měsíční spotřeby (MWh). Součet může nahradit roční hodnotu.</div>
+  <div class="month-grid">
+    <label>Leden <input class="inp field-narrow" type="number" step="0.01" data-month="1"></label>
+    <label>Únor  <input class="inp field-narrow" type="number" step="0.01" data-month="2"></label>
+    <label>Březen<input class="inp field-narrow" type="number" step="0.01" data-month="3"></label>
+    <label>Duben <input class="inp field-narrow" type="number" step="0.01" data-month="4"></label>
+    <label>Květen<input class="inp field-narrow" type="number" step="0.01" data-month="5"></label>
+    <label>Červen<input class="inp field-narrow" type="number" step="0.01" data-month="6"></label>
+    <label>Červenec   <input class="inp field-narrow" type="number" step="0.01" data-month="7"></label>
+    <label>Srpen      <input class="inp field-narrow" type="number" step="0.01" data-month="8"></label>
+    <label>Září       <input class="inp field-narrow" type="number" step="0.01" data-month="9"></label>
+    <label>Říjen      <input class="inp field-narrow" type="number" step="0.01" data-month="10"></label>
+    <label>Listopad   <input class="inp field-narrow" type="number" step="0.01" data-month="11"></label>
+    <label>Prosinec   <input class="inp field-narrow" type="number" step="0.01" data-month="12"></label>
+  </div>
+</div>
                 </div>
                 <div class="flex items-end gap-2">
                   <input id="obj-has-series-cons" type="checkbox" class="chk">
@@ -120,11 +140,11 @@
                 <div class="grid md:grid-cols-2 gap-3">
                   <div>
                     <label class="lbl">Měsíční spotřeby (MWh) – CSV</label>
-                    <input id="obj-monthly-csv" type="file" accept=".csv" class="inp-file">
+                    <input id="obj-monthly-csv" type="file" accept=".csv" class="inp-file when-series">
                   </div>
                   <div>
                     <label class="lbl">Hodinové/¼h spotřeby – CSV</label>
-                    <input id="obj-series-cons-csv" type="file" accept=".csv" class="inp-file">
+                    <input id="obj-series-cons-csv" type="file" accept=".csv" class="inp-file when-series">
                   </div>
                 </div>
               </div>
@@ -134,7 +154,7 @@
                   <input id="obj-has-gen" type="checkbox" class="chk">
                   <label for="obj-has-gen" class="lbl !mb-0">Objekt má vlastní výrobu</label>
                 </div>
-                <div class="grid grid-cols-3 gap-3">
+                <div class="grid grid-cols-3 gap-3 obj-gen" style="display:none;">
                   <div>
                     <label class="lbl">FVE (kWp)</label>
                     <input id="obj-fve" type="number" step="0.01" class="inp">
@@ -150,7 +170,7 @@
                 </div>
               </div>
 
-              <div class="grid md:grid-cols-2 gap-3">
+              <div class="grid md:grid-cols-2 gap-3 obj-acc" style="display:none;">
                 <div>
                   <label class="lbl">Akum. nádrž TUV (m³)</label>
                   <input id="obj-tuv" type="number" step="0.01" class="inp">
