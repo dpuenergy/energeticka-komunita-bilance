@@ -65,7 +65,7 @@
   function dedupe(keys) {
     keys.forEach(key => {
       const nodes = document.querySelectorAll('.segmented[data-key="'+key+'"]');
-      nodes.forEach((n, i) => { if (i > 0) n.remove(); });
+      if (nodes.length>1){ nodes.forEach((n,i)=>{ if(n.dataset.key==="commodityMode" && i===0) return; if(i>0) n.remove(); }); }
     });
   }
   window.addEventListener("DOMContentLoaded", () => {
@@ -87,4 +87,13 @@
     for (const m of muts) { if (m.addedNodes?.length) { pruneUnallowed(); break; } }
   });
   mo.observe(document.documentElement, { childList:true, subtree:true });
+})();
+/* debug: log segmented keys after prune/dedupe */
+(() => {
+  function logSeg(where){
+    const arr=[...document.querySelectorAll(".segmented")].map(el=>el.dataset.key||"(no-key)");
+    console.log("[segmented:"+where+"]", arr);
+  }
+  document.addEventListener("DOMContentLoaded", ()=>logSeg("DOMContentLoaded"));
+  setTimeout(()=>logSeg("after 500ms"), 500);
 })();
