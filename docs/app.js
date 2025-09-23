@@ -299,3 +299,98 @@ window.addEventListener("DOMContentLoaded", () => {
     applyObjectPanel(); wireMonthlyPanel();
   });
 })();
+/* === ROW-SCOPED PRICING TOGGLES (runtime) === */
+(() => {
+  const LABELS = [
+    {scope:"commodity",   text:"Jednotková cena komoditní",  id:"price-commodity"},
+    {scope:"distribution", text:"Jednotková cena distribuční", id:"price-distribution"},
+    {scope:"feedin",       text:"Jednotková cena přetoků",     id:"price-feedin"}
+  ];
+
+  function mk(html){ const t=document.createElement('template'); t.innerHTML=html.trim(); return t.content.firstElementChild; }
+  function findInputAfter(label){
+    let n = label;
+    for(let i=0;i<20 && n;i++){
+      n = n.nextElementSibling;
+      if(!n) break;
+      if(n.tagName === 'INPUT') return n;
+      const inp = n.querySelector && n.querySelector('input');
+      if(inp) return inp;
+    }
+    return null;
+  }
+
+  // uložený stav (per-row)
+  const stKey = 'ekb_row_modes_v1';
+  let modes = {};
+  try{ modes = JSON.parse(localStorage.getItem(stKey) || '{}'); }catch{ modes = {}; }
+  const save = () => { try{ localStorage.setItem(stKey, JSON.stringify(modes)); }catch{} };
+
+  function wireRow(row, scope){
+    const seg = row.querySelector('.segmented[data-key="'+scope+'"]');
+    const uni = row.querySelector('.uniform-only');
+    const per = row.querySelector('.per-object-only');
+
+    function apply(){
+      const mode = modes[scope] || 'uniform';
+      if(uni) uni.style.display = (mode==='uniform') ? '' : 'none';
+      if(per) per.style.display = (mode==='per-object') ? '' : 'none';
+      seg.querySelectorAll('.seg').forEach(b=>{
+        const on = (b.dataset.val === mode);
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+    }
+
+    seg.addEventListener('click', (e)=>{
+      const btn = e.target.closest('.seg');
+      if(!btn) return;
+      modes[scope] = btn.dataset.val || 'uniform';
+      save();
+      apply();
+    });
+    if(!modes[scope]) { modes[scope] = 'uniform'; save(); }
+    apply();
+  }
+
+  function setup(){
+    const labels = [...document.querySelectorAll('label')];
+    LABELS.forEach(cfg=>{
+      const lab = labels.find(l => (l.textContent||'').trim().startsWith(cfg.text));
+      if(!lab) return;
+      const inp = findInputAfter(lab);
+      if(!inp) return;
+
+      // už zabaleno? přeskoč
+      if(lab.closest('.price-row[data-scope="'+cfg.scope+'"]')) return;
+
+      // kontejner
+      const row = mk('<div class="price-row" data-scope="'+cfg.scope+'"></div>');
+      const seg = mk(
+        '<div class="segmented" data-key="'+cfg.scope+'">'+
+          '<button class="seg" data-val="uniform" aria-selected="true">Všechna OM stejná cena</button>'+
+          '<button class="seg" data-val="per-object" aria-selected="false">Každé OM vlastní cena</button>'+
+        '</div>'
+      );
+      const uni = mk('<div class="uniform-only"></div>');
+      const per = mk('<div class="per-object-only" style="display:none"><!-- TODO: per-object --></div>');
+
+      // přesuň label+input do uniform části
+      if(!inp.id) inp.id = cfg.id;
+      uni.appendChild(lab);
+      uni.appendChild(inp);
+
+      // vlož do DOM
+      const host = uni.parentNode || row; // safeguard
+      (host || document.body);
+      const anchor = uni.querySelector('label') || lab;
+      const where = anchor.parentElement;
+      where.insertBefore(row, where.contains(lab) ? lab : where.firstChild);
+      row.appendChild(seg); row.appendChild(uni); row.appendChild(per);
+
+      wireRow(row, cfg.scope);
+    });
+  }
+
+  window.addEventListener('DOMContentLoaded', setup);
+})();

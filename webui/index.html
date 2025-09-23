@@ -73,16 +73,55 @@
 
           <div id="uniform-pricing" class="grid md:grid-cols-3 gap-4">
             <div>
-              <label class="lbl">Jednotková cena komoditní (Kč/MWh)</label>
-              <input id="price_commodity_mwh" type="number" value="2200" class="inp">
+              <div class="price-row" data-scope="commodity">
+  <div class="segmented" data-key="commodity">
+    <button class="seg" data-val="uniform" aria-selected="true">Všechna OM stejná cena</button>
+    <button class="seg" data-val="per-object" aria-selected="false">Každé OM vlastní cena</button>
+  </div>
+
+  <div class="uniform-only">
+    <label class="lbl">Jednotková cena komoditní (Kč/MWh)</label>
+    <input id="price-commodity" id="price_commodity_mwh" type="number" value="2200" class="inp">
+  </div>
+
+  <div class="per-object-only" style="display:none">
+    <!-- TODO: per-object ceny pro commodity -->
+  </div>
+</div>
             </div>
             <div>
-              <label class="lbl">Jednotková cena distribuční (Kč/MWh)</label>
-              <input id="price_distribution_mwh" type="number" value="1800" class="inp">
+              <div class="price-row" data-scope="distribution">
+  <div class="segmented" data-key="distribution">
+    <button class="seg" data-val="uniform" aria-selected="true">Všechna OM stejná cena</button>
+    <button class="seg" data-val="per-object" aria-selected="false">Každé OM vlastní cena</button>
+  </div>
+
+  <div class="uniform-only">
+    <label class="lbl">Jednotková cena distribuční (Kč/MWh)</label>
+    <input id="price-distribution" id="price_distribution_mwh" type="number" value="1800" class="inp">
+  </div>
+
+  <div class="per-object-only" style="display:none">
+    <!-- TODO: per-object ceny pro distribution -->
+  </div>
+</div>
             </div>
             <div>
-              <label class="lbl">Jednotková cena přetoků (Kč/MWh)</label>
-              <input id="price_feed_in_mwh" type="number" value="1200" class="inp">
+              <div class="price-row" data-scope="feedin">
+  <div class="segmented" data-key="feedin">
+    <button class="seg" data-val="uniform" aria-selected="true">Všechna OM stejná cena</button>
+    <button class="seg" data-val="per-object" aria-selected="false">Každé OM vlastní cena</button>
+  </div>
+
+  <div class="uniform-only">
+    <label class="lbl">Jednotková cena přetoků (Kč/MWh)</label>
+    <input id="price-feedin" id="price_feed_in_mwh" type="number" value="1200" class="inp">
+  </div>
+
+  <div class="per-object-only" style="display:none">
+    <!-- TODO: per-object ceny pro feedin -->
+  </div>
+</div>
             </div>
           </div>
 
