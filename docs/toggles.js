@@ -48,3 +48,15 @@
 
   window.addEventListener("DOMContentLoaded", hydrate);
 })();
+/* --- dedupe segmented toggles (keep first per key) --- */
+(() => {
+  function dedupe(keys) {
+    keys.forEach(key => {
+      const nodes = document.querySelectorAll('.segmented[data-key="'+key+'"]');
+      nodes.forEach((n, i) => { if (i > 0) n.remove(); });
+    });
+  }
+  window.addEventListener("DOMContentLoaded", () => {
+    dedupe(["pricingMode","distributionMode","feedinMode"]);
+  });
+})();
