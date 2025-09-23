@@ -34,3 +34,85 @@
 .segmented { display:inline-flex; background:#f1f5f9; border-radius:9999px; padding:4px; gap:4px; }
 .segmented .seg { padding:.5rem .75rem; border-radius:9999px; font-size:.875rem; line-height:1; }
 .segmented .seg.active { background:#ffffff; box-shadow:0 1px 2px rgba(0,0,0,.06); }
+/* --- KROK 1: typografie, jednotky, vstupy, tlačítka, toggles --- */
+
+/* menší základní písmo (~15px) */
+html { font-size: 15px; }
+
+/* jednotky – menší, tmavě šedé */
+.unit { font-size: .75rem; color: #334155; opacity: .85; }
+
+/* textboxy – jemný border + světle šedé pozadí */
+.inp, input[type="number"], input[type="text"], select {
+  border: 1px solid #e2e8f0; background: #f8fafc; border-radius: .625rem;
+}
+.inp:focus, input:focus, select:focus { outline: none; border-color: #60a5fa; background: #ffffff; }
+
+/* sjednocení tlačítek (brand barvy) */
+:root {
+  --brand: #0ea5e9;          /* primární (azurově modrá) */
+  --brand-hover: #0284c7;    /* hover tmavší */
+  --brand-ghost: #e2e8f0;    /* ghost okraj */
+}
+.btn-primary, .btn-brand {
+  background: var(--brand); color:#fff; border-radius:.625rem; padding:.55rem .9rem; font-weight:600;
+  border:1px solid var(--brand);
+}
+.btn-primary:hover, .btn-brand:hover { background: var(--brand-hover); border-color: var(--brand-hover); }
+.btn-ghost {
+  background:#fff; color:#0f172a; border:1px solid var(--brand-ghost); border-radius:.625rem; padding:.5rem .8rem;
+}
+.btn-ghost:hover { background:#f8fafc; }
+
+/* toggles (segmented) – button look */
+.segmented { display:inline-flex; background:#e5e7eb; border-radius:9999px; padding:4px; gap:4px; border:1px solid #cbd5e1; }
+.segmented .seg {
+  padding:.5rem .8rem; border-radius:9999px; font-size:.875rem; line-height:1; border:1px solid transparent;
+  background:#f1f5f9; color:#475569;
+}
+.segmented .seg.active {
+  background:#ffffff; color:#0f172a; border-color:#3b82f6; /* modrý border */
+  box-shadow:0 1px 2px rgba(0,0,0,.06);
+}
+/* --- KROK1: typografie, jednotky, vstupy, tlačítka, toggles --- */
+
+/* menší základní písmo (~15px) */
+html { font-size: 15px; }
+
+/* jednotky – menší, tmavě šedé (použij ve značkách: <span class="unit">Kč/MWh</span>) */
+.unit { font-size: .75rem; color: #334155; opacity: .9; }
+
+/* textboxy – jemný border + světle šedé pozadí */
+.inp, input[type="number"], input[type="text"], select {
+  border: 1px solid #e2e8f0; background: #f8fafc; border-radius: .625rem;
+}
+.inp:focus, input:focus, select:focus { outline: none; border-color: #60a5fa; background: #ffffff; }
+
+/* brand paleta */
+:root {
+  --brand: #0ea5e9;          /* primární */
+  --brand-hover: #0284c7;    /* hover tmavší */
+  --brand-ghost: #e2e8f0;    /* okraj pro ghost */
+}
+
+/* sjednocení tlačítek */
+.btn-primary, .btn-brand {
+  background: var(--brand); color:#fff; border-radius:.625rem; padding:.55rem .9rem; font-weight:600;
+  border:1px solid var(--brand);
+}
+.btn-primary:hover, .btn-brand:hover { background: var(--brand-hover); border-color: var(--brand-hover); }
+.btn-ghost {
+  background:#fff; color:#0f172a; border:1px solid var(--brand-ghost); border-radius:.625rem; padding:.5rem .8rem;
+}
+.btn-ghost:hover { background:#f8fafc; }
+
+/* toggles (segmented) → „toggle buttons“ */
+.segmented { display:inline-flex; background:#e5e7eb; border-radius:9999px; padding:4px; gap:4px; border:1px solid #cbd5e1; }
+.segmented .seg {
+  padding:.5rem .8rem; border-radius:9999px; font-size:.875rem; line-height:1; border:1px solid transparent;
+  background:#f1f5f9; color:#475569; /* neaktivní: šedý text + světle šedé pozadí */
+}
+.segmented .seg.active {
+  background:#ffffff; color:#0f172a; border-color:#3b82f6; /* aktivní: bílý bg, černý text, modrý border */
+  box-shadow:0 1px 2px rgba(0,0,0,.06);
+}
