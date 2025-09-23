@@ -68,6 +68,16 @@
           </div>
 
           <!-- Jednotné ceny (zobrazí se pokud je uniform) -->
+<!-- Přepínač režimu cen -->
+<div class="segmented" data-key="pricingMode" role="tablist" aria-label="Režim cen">
+  <button type="button" class="seg active" data-val="uniform" role="tab" aria-selected="true">
+    Všechna OM stejná cena
+  </button>
+  <button type="button" class="seg" data-val="per-object" role="tab" aria-selected="false">
+    Každé OM vlastní cena
+  </button>
+</div>
+
           <div id="uniform-pricing" class="grid md:grid-cols-3 gap-4">
             <div>
               <label class="lbl">Jednotková cena komoditní (Kč/MWh)</label>
@@ -244,5 +254,6 @@
   <script src="./config.js"></script>
   <script src="./app.js"></script>
 <script src="./build-info.js"></script>
+  <script src="./toggles.js"></script>
 </body>
 </html>
