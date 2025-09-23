@@ -75,7 +75,7 @@
 /* --- allowlist guard: keep only segmented with data-ekb-allowed="1" --- */
 (() => {
   function pruneUnallowed(root=document){
-    root.querySelectorAll(".segmented").forEach(el=>{
+    ((root && root.querySelectorAll) ? root : document).querySelectorAll(".segmented").forEach(el=>{
       if (el.getAttribute("data-ekb-allowed") !== "1") el.remove();
     });
   }
