@@ -624,3 +624,57 @@ window.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("DOMContentLoaded", init);
   } else { init(); }
 })();
+/* === ROW-SCOPED UNIFORM VISIBILITY (no DOM moves) === */
+(function(){
+  const MAP = {
+    commodityMode:   'price-commodity',
+    distributionMode:'price-distribution',
+    feedinMode:      'price-feedin'
+  };
+  function pair(id){
+    const inp = document.getElementById(id);
+    if(!inp) return {inp:null, lab:null, row:null};
+    let lab = inp.previousElementSibling;
+    if(!(lab && lab.tagName==='LABEL')) lab = document.querySelector('label[for="'+id+'"]');
+    const row = inp.closest('div,fieldset,section,li,td,tr');
+    return {inp, lab, row};
+  }
+  function applyAll(){
+    // načti aktuální módy z DOM (active) / fallback LS
+    const modes = {};
+    document.querySelectorAll('.segmented[data-key]').forEach(seg=>{
+      const btn = seg.querySelector('.seg.active') || seg.querySelector('.seg[aria-selected="true"]');
+      modes[seg.dataset.key] = btn?.dataset?.val || 'uniform';
+    });
+    if(Object.keys(modes).length===0){
+      try{ const st = JSON.parse(localStorage.getItem('ekb_toggles_v1')||'{}');
+           ['commodityMode','distributionMode','feedinMode'].forEach(k=>modes[k]=st[k]||'uniform'); }catch{}
+    }
+
+    let anyUniform=false;
+    Object.entries(MAP).forEach(([key,id])=>{
+      const mode = modes[key] || 'uniform';
+      if(mode==='uniform') anyUniform=true;
+      const {inp, lab} = pair(id);
+      if(inp){ inp.style.display = (mode==='per-object')?'none':''; }
+      if(lab){ lab.style.display = (mode==='per-object')?'none':''; }
+    });
+
+    const box = document.getElementById('uniform-pricing');
+    if(box){
+      // ukázat jen když aspoň jeden řádek je uniform
+      box.style.display = anyUniform ? '' : 'none';
+    }
+  }
+
+  // Hook na kliky přepínačů
+  document.addEventListener('click', (e)=>{
+    if(!e.target.closest('.segmented .seg')) return;
+    setTimeout(applyAll, 0);
+  });
+
+  // Init po načtení i hned (když už je načteno)
+  if(document.readyState==='loading'){
+    window.addEventListener('DOMContentLoaded', applyAll);
+  } else { applyAll(); }
+})();
