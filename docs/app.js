@@ -394,3 +394,117 @@ window.addEventListener("DOMContentLoaded", () => {
 
   window.addEventListener('DOMContentLoaded', setup);
 })();
+/* === ROW-SCOPED PRICING TOGGLES (runtime v2) === */
+(() => {
+  const CFG = [
+    {scope:"commodity",   text:"Jednotková cena komoditní",  id:"price-commodity"},
+    {scope:"distribution",text:"Jednotková cena distribuční",id:"price-distribution"},
+    {scope:"feedin",      text:"Jednotková cena přetoků",     id:"price-feedin"}
+  ];
+
+  const stKey = "ekb_row_modes_v1";
+  let modes = {};
+  try { modes = JSON.parse(localStorage.getItem(stKey)||"{}"); } catch { modes = {}; }
+  const save = () => { try { localStorage.setItem(stKey, JSON.stringify(modes)); } catch {} };
+
+  const mk = (html) => { const t=document.createElement("template"); t.innerHTML=html.trim(); return t.content.firstElementChild; };
+
+  function findLabel(cfg){
+    const labs = Array.from(document.querySelectorAll("label"));
+    const low = cfg.text.toLowerCase();
+    return labs.find(l => (l.textContent||"").trim().toLowerCase().startsWith(low)) || null;
+  }
+  function findInputAfter(label){
+    if(!label) return null;
+    // nejdřív přímo vedle
+    for(let n=label.nextElementSibling, i=0; n && i<30; n=n.nextElementSibling, i++){
+      if(n.tagName==="INPUT") return n;
+      const q = n.querySelector && n.querySelector("input");
+      if(q) return q;
+    }
+    // fallback blíž v okolí
+    return label.parentElement?.querySelector("input") || null;
+  }
+
+  function ensureSeg(row, scope){
+    let seg = row.querySelector('.segmented[data-key="'+scope+'"]');
+    if(seg) return seg;
+    seg = mk(
+      '<div class="segmented" data-key="'+scope+'">'+
+        '<button class="seg" data-val="uniform" aria-selected="true">Všechna OM stejná cena</button>'+
+        '<button class="seg" data-val="per-object" aria-selected="false">Každé OM vlastní cena</button>'+
+      '</div>'
+    );
+    row.insertBefore(seg, row.firstChild);
+    return seg;
+  }
+  function ensureContainers(row){
+    let uni = row.querySelector(".uniform-only");
+    let per = row.querySelector(".per-object-only");
+    if(!uni){ uni = mk('<div class="uniform-only"></div>'); row.appendChild(uni); }
+    if(!per){ per = mk('<div class="per-object-only" style="display:none"></div>'); row.appendChild(per); }
+    return {uni, per};
+  }
+  function wireRow(row, scope){
+    const seg = ensureSeg(row, scope);
+    const {uni, per} = ensureContainers(row);
+
+    function apply(){
+      const mode = modes[scope] || "uniform";
+      if(uni) uni.style.display = (mode==="uniform") ? "" : "none";
+      if(per) per.style.display = (mode==="per-object") ? "" : "none";
+      seg.querySelectorAll(".seg").forEach(b=>{
+        const on = (b.dataset.val===mode);
+        b.classList.toggle("active", on);
+        b.setAttribute("aria-selected", on ? "true" : "false");
+      });
+    }
+    seg.addEventListener("click", (e)=>{
+      const btn = e.target.closest(".seg");
+      if(!btn) return;
+      modes[scope] = btn.dataset.val || "uniform";
+      save();
+      apply();
+    });
+    if(!modes[scope]) { modes[scope] = "uniform"; save(); }
+    apply();
+  }
+
+  function buildRowFromLabel(cfg, lab){
+    const inp = findInputAfter(lab);
+    if(!inp) return null;
+    if(!inp.id) inp.id = cfg.id;
+
+    const row = mk('<div class="price-row" data-scope="'+cfg.scope+'"></div>');
+    // vlož řádek těsně před label do DOM
+    const host = lab.parentElement || document.body;
+    host.insertBefore(row, lab);
+
+    const seg = ensureSeg(row, cfg.scope);
+    const {uni, per} = ensureContainers(row);
+
+    // přesuneme label+input do uniform části
+    uni.appendChild(lab);
+    uni.appendChild(inp);
+
+    // placeholder pro per-object necháme prázdný (doplní se později UI)
+    wireRow(row, cfg.scope);
+    return row;
+  }
+
+  function setup(){
+    CFG.forEach(cfg=>{
+      let row = document.querySelector('.price-row[data-scope="'+cfg.scope+'"]');
+      if(!row){
+        const lab = findLabel(cfg);
+        if(lab) row = buildRowFromLabel(cfg, lab);
+      }
+      if(row){
+        // kdyby už řádek byl, ale chyběly prvky, doplníme a zapojíme
+        wireRow(row, cfg.scope);
+      }
+    });
+  }
+
+  window.addEventListener("DOMContentLoaded", setup);
+})();
