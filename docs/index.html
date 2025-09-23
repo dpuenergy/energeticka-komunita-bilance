@@ -53,14 +53,14 @@
             </div>
             <div class="setting">
               <label class="setting-title">Distribuční složka</label>
-              <div class="segmented" data-key="distributionMode">
+              <div class="segmented" data-ekb-allowed="1" data-key="distributionMode">
                 <button data-val="uniform" class="seg active">Všechna OM stejná cena</button>
                 <button data-val="per-object" class="seg">Každé OM vlastní cena</button>
               </div>
             </div>
             <div class="setting">
               <label class="setting-title">Prodej přetoků</label>
-              <div class="segmented" data-key="feedinMode">
+              <div class="segmented" data-ekb-allowed="1" data-key="feedinMode">
                 <button data-val="uniform" class="seg active">Všechna OM stejná cena</button>
                 <button data-val="per-object" class="seg">Každé OM vlastní cena</button>
               </div>
@@ -69,14 +69,7 @@
 
           <!-- Jednotné ceny (zobrazí se pokud je uniform) -->
 <!-- Přepínač režimu cen -->
-<div class="segmented" data-key="pricingMode" role="tablist" aria-label="Režim cen">
-  <button type="button" class="seg active" data-val="uniform" role="tab" aria-selected="true">
-    Všechna OM stejná cena
-  </button>
-  <button type="button" class="seg" data-val="per-object" role="tab" aria-selected="false">
-    Každé OM vlastní cena
-  </button>
-</div>
+
 
           <div id="uniform-pricing" class="grid md:grid-cols-3 gap-4">
             <div>
@@ -254,6 +247,6 @@
   <script src="./config.js"></script>
   <script src="./app.js"></script>
 <script src="./build-info.js"></script>
-  <script src="./toggles.js"></script>
+  <script src="./toggles.js?v=1758610240"></script>
 </body>
 </html>

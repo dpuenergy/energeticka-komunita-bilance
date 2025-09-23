@@ -1,8 +1,20 @@
-﻿/* === toggles: isolated module (pricingMode) === */
+﻿/* migrate legacy pricingMode -> commodityMode */
+(() => {
+  try {
+    const k = "ekb_toggles_v1";
+    const st = JSON.parse(localStorage.getItem(k) || "{}");
+    if (st.pricingMode && !st.commodityMode) {
+      st.commodityMode = st.pricingMode;
+      delete st.pricingMode;
+      localStorage.setItem(k, JSON.stringify(st));
+    }
+  } catch {}
+})();
+/* === toggles: isolated module (commodityMode) === */
 (() => {
   if (typeof window.FEATURE_TOGGLES !== "undefined" && !window.FEATURE_TOGGLES) return;
 
-  const state = { pricingMode: "uniform" };
+  const state = { commodityMode: "uniform" };
   const persistKey = "ekb_toggles_v1";
 
   try {
@@ -12,20 +24,20 @@
 
   function save() { try { localStorage.setItem(persistKey, JSON.stringify(state)); } catch {} }
 
-  function applyPricingVisibility() {
-    const isUniform = state.pricingMode === "uniform";
+  function applyCommodityVisibility() {
+    const isUniform = state.commodityMode === "uniform";
     const uniformBox = document.querySelector("#uniform-pricing");
     if (uniformBox) uniformBox.style.display = isUniform ? "" : "none";
     document.querySelectorAll(".per-object-field").forEach(el => el.style.display = isUniform ? "none" : "");
   }
 
   function hydrate() {
-    document.querySelectorAll('.segmented[data-key="pricingMode"] .seg').forEach(btn => {
-      const on = btn.dataset.val === state.pricingMode;
+    document.querySelectorAll('.segmented[data-key="commodityMode"] .seg').forEach(btn => {
+      const on = btn.dataset.val === state.commodityMode;
       btn.classList.toggle("active", on);
       btn.setAttribute("aria-selected", on ? "true" : "false");
     });
-    applyPricingVisibility();
+    applyCommodityVisibility();
   }
 
   document.addEventListener("click", (e) => {
@@ -43,7 +55,7 @@
 
     state[key] = btn.dataset.val;
     save();
-    if (key === "pricingMode") applyPricingVisibility();
+    if (key === "commodityMode") applyCommodityVisibility();
   });
 
   window.addEventListener("DOMContentLoaded", hydrate);
@@ -57,6 +69,22 @@
     });
   }
   window.addEventListener("DOMContentLoaded", () => {
-    dedupe(["pricingMode","distributionMode","feedinMode"]);
+    dedupe(["commodityMode","distributionMode","feedinMode"]);
   });
+})();
+/* --- allowlist guard: keep only segmented with data-ekb-allowed="1" --- */
+(() => {
+  function pruneUnallowed(root=document){
+    root.querySelectorAll(".segmented").forEach(el=>{
+      if (el.getAttribute("data-ekb-allowed") !== "1") el.remove();
+    });
+  }
+  if (document.readyState !== "loading") pruneUnallowed();
+  else window.addEventListener("DOMContentLoaded", pruneUnallowed);
+
+  // kdyby něco přibylo runtime
+  const mo = new MutationObserver(muts=>{
+    for (const m of muts) { if (m.addedNodes?.length) { pruneUnallowed(); break; } }
+  });
+  mo.observe(document.documentElement, { childList:true, subtree:true });
 })();
