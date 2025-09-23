@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Komunitní energetika <span class="brand-by">by DPU ENERGY</span></title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="./style.css?v=1758616972">
+  <link rel="stylesheet" href="./style.css?v=1758617155">
 </head>
 <body class="bg-slate-50 text-slate-900">
   <!-- HEADER -->
@@ -297,9 +297,24 @@
     </section>
   </main>
 
-  <script src="./config.js?v=1758616972"></script>
-  <script src="./app.js?v=1758616972"></script>
+  <script src="./config.js?v=1758617155"></script>
+  <script src="./app.js?v=1758617155"></script>
 <script src="./build-info.js"></script>
-  <script src="./toggles.js?v=1758616972"></script>
+  <script src="./toggles.js?v=1758617155"></script>
+<!-- === ROW-BASED UNIFORM BLOCKS (replaces old #uniform-pricing) === -->
+<div id="uniform-commodity" class="uniform-row">
+  <label for="price-commodity">Jednotková cena komoditní (Kč/MWh)</label>
+  <input id="price-commodity" type="number" inputmode="decimal" class="inp">
+</div>
+
+<div id="uniform-distribution" class="uniform-row">
+  <label for="price-distribution">Jednotková cena distribuční (Kč/MWh)</label>
+  <input id="price-distribution" type="number" inputmode="decimal" class="inp">
+</div>
+
+<div id="uniform-feedin" class="uniform-row">
+  <label for="price-feedin">Jednotková cena přetoků (Kč/MWh)</label>
+  <input id="price-feedin" type="number" inputmode="decimal" class="inp">
+</div>
 </body>
 </html>

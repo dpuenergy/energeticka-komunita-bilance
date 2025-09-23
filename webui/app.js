@@ -603,3 +603,28 @@ window.addEventListener("DOMContentLoaded", () => {
 
   window.addEventListener("DOMContentLoaded", init);
 })();
+/* === ROW-BASED UNIFORM LOGIC (final) === */
+(function(){
+  const MAP = {
+    commodityMode:   'uniform-commodity',
+    distributionMode:'uniform-distribution',
+    feedinMode:      'uniform-feedin'
+  };
+  function apply(key, mode){
+    const id = MAP[key]; if(!id) return;
+    const box = document.getElementById(id); if(!box) return;
+    box.style.display = (mode === "per-object") ? "none" : "";
+  }
+  function init(){
+    let st = {}; try { st = JSON.parse(localStorage.getItem("ekb_toggles_v1")||"{}"); } catch {}
+    Object.keys(MAP).forEach(k => apply(k, st[k]||"uniform"));
+  }
+  document.addEventListener("click", e=>{
+    const btn = e.target.closest(".segmented .seg"); if(!btn) return;
+    const key = btn.closest(".segmented")?.dataset?.key; if(!key) return;
+    apply(key, btn.dataset.val || "uniform");
+  });
+  if (document.readyState === "loading") {
+    window.addEventListener("DOMContentLoaded", init);
+  } else { init(); }
+})();
