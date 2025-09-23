@@ -567,3 +567,39 @@ window.addEventListener("DOMContentLoaded", () => {
 
   window.addEventListener("DOMContentLoaded", init);
 })();
+/* === ROW-BASED UNIFORM LOGIC === */
+(function(){
+  const MAP = {
+    commodityMode: 'uniform-commodity',
+    distributionMode: 'uniform-distribution',
+    feedinMode: 'uniform-feedin'
+  };
+
+  function apply(key, mode){
+    const id = MAP[key];
+    if(!id) return;
+    const box = document.getElementById(id);
+    if(!box) return;
+    box.style.display = (mode === "per-object") ? "none" : "";
+  }
+
+  function init(){
+    let st = {};
+    try { st = JSON.parse(localStorage.getItem("ekb_toggles_v1")||"{}"); } catch {}
+    Object.entries(MAP).forEach(([k,id])=>{
+      apply(k, st[k]||"uniform");
+    });
+  }
+
+  document.addEventListener("click", e=>{
+    const btn = e.target.closest(".segmented .seg");
+    if(!btn) return;
+    const wrap = btn.closest(".segmented");
+    const key = wrap?.dataset?.key;
+    if(!key) return;
+    const mode = btn.dataset.val || "uniform";
+    apply(key, mode);
+  });
+
+  window.addEventListener("DOMContentLoaded", init);
+})();
