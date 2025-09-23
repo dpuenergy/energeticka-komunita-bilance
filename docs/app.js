@@ -508,3 +508,62 @@ window.addEventListener("DOMContentLoaded", () => {
 
   window.addEventListener("DOMContentLoaded", setup);
 })();
+/* === ROW-SCOPED MAPPER (per-row control for common price fields) === */
+(function(){
+  const MAP = [
+    { key:"commodityMode",    scope:"commodity",    label:"Jednotková cena komoditní" },
+    { key:"distributionMode", scope:"distribution", label:"Jednotková cena distribuční" },
+    { key:"feedinMode",       scope:"feedin",       label:"Jednotková cena přetoků" }
+  ];
+
+  function findUniformBlock(labelStarts){
+    const labs = Array.from(document.querySelectorAll("label"));
+    const lab = labs.find(l => (l.textContent||"").trim().startsWith(labelStarts));
+    if(!lab) return null;
+
+    // najdi nejbližší container, který zároveň obsahuje i input (typicky wrapper label+input)
+    let n = lab;
+    for(let i=0; i<10 && n; i++){
+      if(n.querySelector && n.querySelector("input")) return n;
+      n = n.parentElement;
+    }
+    // fallback: rodič labelu
+    return lab.parentElement || lab;
+  }
+
+  function apply(scope, mode){
+    const cfg = MAP.find(c => c.scope===scope);
+    if(!cfg || !cfg._block) return;
+    // uniform-only blok se skrývá, když je per-object, jinak je vidět
+    cfg._block.style.display = (mode === "per-object") ? "none" : "";
+  }
+
+  function init(){
+    // 1) namapuj bloky podle labelů
+    MAP.forEach(cfg => { cfg._block = findUniformBlock(cfg.label); });
+
+    // 2) načti stav z původního localStorage (pokud existuje)
+    let st = {};
+    try { st = JSON.parse(localStorage.getItem("ekb_toggles_v1") || "{}"); } catch {}
+
+    // 3) inicializace – aplikuj mód na každý řádek
+    MAP.forEach(cfg => {
+      const mode = (st[cfg.key] || "uniform");
+      apply(cfg.scope, mode);
+    });
+
+    // 4) kliky na segmented – přepočítej jen ten daný řádek
+    document.addEventListener("click", (e)=>{
+      const btn = e.target.closest(".segmented .seg");
+      if(!btn) return;
+      const wrap = btn.closest(".segmented");
+      const key = wrap && wrap.dataset ? wrap.dataset.key : null;
+      const cfg = MAP.find(c => c.key === key);
+      if(!cfg) return;
+      const mode = btn.dataset.val || "uniform";
+      apply(cfg.scope, mode);
+    });
+  }
+
+  window.addEventListener("DOMContentLoaded", init);
+})();
