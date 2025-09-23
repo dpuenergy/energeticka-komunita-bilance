@@ -52,11 +52,7 @@ function toast(msg, type="info") {
   setTimeout(() => { el.classList.remove("show"); setTimeout(()=>el.remove(), 300); }, 4000);
 }
 
-function updateUniformVisibility() {
-  const show = state.commodityMode==="uniform" && state.distributionMode==="uniform" && state.feedinMode==="uniform";
-  qs("#uniform-pricing").classList.toggle("hidden", !show);
-  qsa(".per-object-field").forEach(el => el.classList.toggle("hidden", show));
-}
+
 
 function renderObjects() {
   const tb = qs("#objects-tbody");
@@ -192,11 +188,11 @@ window.addEventListener("DOMContentLoaded", () => {
       seg.querySelectorAll(".seg").forEach(b=>b.classList.remove("active"));
       btn.classList.add("active");
       state[seg.dataset.key] = btn.dataset.val;
-      updateUniformVisibility();
+
     });
   });
 
-  updateUniformVisibility();
+
   renderObjects();
 
   // add object button
