@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>KomunitnĂ­ energetika <span class="brand-by">by DPU ENERGY</span></title>
+  <title>Komunitní energetika <span class="brand-by">by DPU ENERGY</span></title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="./style.css?v=1758623675">
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body class="bg-slate-50 text-slate-900">
   <!-- HEADER -->
@@ -13,7 +13,7 @@
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
       <img id="logo" src="./assets/logo.svg" alt="DPU ENERGY" class="h-8 w-8">
       <h1 class="text-lg md:text-xl font-semibold tracking-tight">
-        KomunitnĂ­ energetika <span class="text-brand-600">by DPU ENERGY</span>
+        Komunitní energetika <span class="text-brand-600">by DPU ENERGY</span>
       </h1>
       <span class="ml-auto text-xs text-slate-500 hidden sm:inline" id="build-info"></span>
     </div>
@@ -23,7 +23,7 @@
     <!-- INTRO -->
     <section class="rounded-2xl border bg-white p-5">
       <p class="text-sm text-slate-600">
-        VĂ­tej. Tady nakonfigurujeĹˇ vstupy a objekty. Po potvrzenĂ­ pobÄ›ĹľĂ­ backendovĂ© kroky (1â†’3) a vĂ˝stupy uvidĂ­Ĺˇ v dalĹˇĂ­ kartÄ›.
+        Vítej. Tady nakonfiguruješ vstupy a objekty. Po potvrzení poběží backendové kroky (1→3) a výstupy uvidíš v další kartě.
       </p>
     </section>
 
@@ -42,39 +42,39 @@
         </div>
 
         <div class="p-5 space-y-6">
-          <!-- PĹ™epĂ­naÄŤe cenovĂ˝ch reĹľimĹŻ -->
+          <!-- Přepínače cenových režimů -->
           <div class="grid md:grid-cols-2 gap-4">
             <div class="setting">
-              <label class="setting-title">KomoditnĂ­ sloĹľka</label>
+              <label class="setting-title">Komoditní složka</label>
               <div class="segmented" data-key="commodityMode" data-ekb-allowed="1">
-                <button data-val="uniform" class="seg active">VĹˇechna OM stejnĂˇ cena</button>
-                <button data-val="per-object" class="seg">KaĹľdĂ© OM vlastnĂ­ cena</button>
+                <button data-val="uniform" class="seg active">Všechna OM stejná cena</button>
+                <button data-val="per-object" class="seg">Každé OM vlastní cena</button>
               </div>
             </div>
             <div class="setting">
-              <label class="setting-title">DistribuÄŤnĂ­ sloĹľka</label>
+              <label class="setting-title">Distribuční složka</label>
               <div class="segmented" data-ekb-allowed="1" data-key="distributionMode">
-                <button data-val="uniform" class="seg active">VĹˇechna OM stejnĂˇ cena</button>
-                <button data-val="per-object" class="seg">KaĹľdĂ© OM vlastnĂ­ cena</button>
+                <button data-val="uniform" class="seg active">Všechna OM stejná cena</button>
+                <button data-val="per-object" class="seg">Každé OM vlastní cena</button>
               </div>
             </div>
             <div class="setting">
-              <label class="setting-title">Prodej pĹ™etokĹŻ</label>
+              <label class="setting-title">Prodej přetoků</label>
               <div class="segmented" data-ekb-allowed="1" data-key="feedinMode">
-                <button data-val="uniform" class="seg active">VĹˇechna OM stejnĂˇ cena</button>
-                <button data-val="per-object" class="seg">KaĹľdĂ© OM vlastnĂ­ cena</button>
+                <button data-val="uniform" class="seg active">Všechna OM stejná cena</button>
+                <button data-val="per-object" class="seg">Každé OM vlastní cena</button>
               </div>
             </div>
           </div>
 
-          <!-- JednotnĂ© ceny (zobrazĂ­ se pokud je uniform) -->
-<!-- PĹ™epĂ­naÄŤ reĹľimu cen -->
+          <!-- Jednotné ceny (zobrazí se pokud je uniform) -->
+<!-- Přepínač režimu cen -->
 
 
 
 
   <div class="uniform-only">
-    <label class="lbl">JednotkovĂˇ cena komoditnĂ­ (KÄŤ/MWh)</label>
+    <label class="lbl">Jednotková cena komoditní (Kč/MWh)</label>
     <input id="price-commodity" id="price_commodity_mwh" type="number" value="2200" class="inp">
   </div>
 
@@ -86,12 +86,12 @@
             <div>
               <div class="price-row" data-scope="distribution">
   <div class="segmented" data-key="distribution">
-    <button class="seg" data-val="uniform" aria-selected="true">VĹˇechna OM stejnĂˇ cena</button>
-    <button class="seg" data-val="per-object" aria-selected="false">KaĹľdĂ© OM vlastnĂ­ cena</button>
+    <button class="seg" data-val="uniform" aria-selected="true">Všechna OM stejná cena</button>
+    <button class="seg" data-val="per-object" aria-selected="false">Každé OM vlastní cena</button>
   </div>
 
   <div class="uniform-only">
-    <label class="lbl">JednotkovĂˇ cena distribuÄŤnĂ­ (KÄŤ/MWh)</label>
+    <label class="lbl">Jednotková cena distribuční (Kč/MWh)</label>
     <input id="price-distribution" id="price_distribution_mwh" type="number" value="1800" class="inp">
   </div>
 
@@ -103,12 +103,12 @@
             <div>
               <div class="price-row" data-scope="feedin">
   <div class="segmented" data-key="feedin">
-    <button class="seg" data-val="uniform" aria-selected="true">VĹˇechna OM stejnĂˇ cena</button>
-    <button class="seg" data-val="per-object" aria-selected="false">KaĹľdĂ© OM vlastnĂ­ cena</button>
+    <button class="seg" data-val="uniform" aria-selected="true">Všechna OM stejná cena</button>
+    <button class="seg" data-val="per-object" aria-selected="false">Každé OM vlastní cena</button>
   </div>
 
   <div class="uniform-only">
-    <label class="lbl">JednotkovĂˇ cena pĹ™etokĹŻ (KÄŤ/MWh)</label>
+    <label class="lbl">Jednotková cena přetoků (Kč/MWh)</label>
     <input id="price-feedin" id="price_feed_in_mwh" type="number" value="1200" class="inp">
   </div>
 
@@ -127,36 +127,36 @@
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M12 5v14M5 12h14"/>
                 </svg>
-                PĹ™idat novĂ˝ objekt
+                Přidat nový objekt
               </button>
             </div>
 
-            <!-- Panel pĹ™idĂˇnĂ­/Ăşpravy -->
+            <!-- Panel přidání/úpravy -->
             <div id="object-panel" class="hidden rounded-xl border bg-slate-50 p-4 space-y-3">
               <div class="grid md:grid-cols-3 gap-3">
                 <div>
-                  <label class="lbl">NĂˇzev objektu</label>
-                  <input id="obj-name" type="text" class="inp field-wide" placeholder="NapĹ™. ZĹ  NovĂˇ">
+                  <label class="lbl">Název objektu</label>
+                  <input id="obj-name" type="text" class="inp field-wide" placeholder="Např. ZŠ Nová">
                 </div>
                 <div>
-                  <label class="lbl">RoÄŤnĂ­ spotĹ™eba (MWh)</label>
+                  <label class="lbl">Roční spotřeba (MWh)</label>
                   <input id="obj-annual-cons" type="number" step="0.01" class="inp field-narrow">
-<button id="btn-monthly-panel" type="button" class="icon-btn" title="MÄ›sĂ­ÄŤnĂ­ spotĹ™eby">
-  <span>âž•</span><span>MÄ›sĂ­ÄŤnĂ­</span>
+<button id="btn-monthly-panel" type="button" class="icon-btn" title="Měsíční spotřeby">
+  <span>➕</span><span>Měsíční</span>
 </button>
 <div id="obj-monthly-panel" class="panel-soft hidden" aria-hidden="true">
-  <div class="help-dim mb-2">Zadej mÄ›sĂ­ÄŤnĂ­ spotĹ™eby (MWh). SouÄŤet mĹŻĹľe nahradit roÄŤnĂ­ hodnotu.</div>
+  <div class="help-dim mb-2">Zadej měsíční spotřeby (MWh). Součet může nahradit roční hodnotu.</div>
   <div class="month-grid">
     <label>Leden <input class="inp field-narrow" type="number" step="0.01" data-month="1"></label>
-    <label>Ăšnor  <input class="inp field-narrow" type="number" step="0.01" data-month="2"></label>
-    <label>BĹ™ezen<input class="inp field-narrow" type="number" step="0.01" data-month="3"></label>
+    <label>Únor  <input class="inp field-narrow" type="number" step="0.01" data-month="2"></label>
+    <label>Březen<input class="inp field-narrow" type="number" step="0.01" data-month="3"></label>
     <label>Duben <input class="inp field-narrow" type="number" step="0.01" data-month="4"></label>
-    <label>KvÄ›ten<input class="inp field-narrow" type="number" step="0.01" data-month="5"></label>
-    <label>ÄŚerven<input class="inp field-narrow" type="number" step="0.01" data-month="6"></label>
-    <label>ÄŚervenec   <input class="inp field-narrow" type="number" step="0.01" data-month="7"></label>
+    <label>Květen<input class="inp field-narrow" type="number" step="0.01" data-month="5"></label>
+    <label>Červen<input class="inp field-narrow" type="number" step="0.01" data-month="6"></label>
+    <label>Červenec   <input class="inp field-narrow" type="number" step="0.01" data-month="7"></label>
     <label>Srpen      <input class="inp field-narrow" type="number" step="0.01" data-month="8"></label>
-    <label>ZĂˇĹ™Ă­       <input class="inp field-narrow" type="number" step="0.01" data-month="9"></label>
-    <label>ĹĂ­jen      <input class="inp field-narrow" type="number" step="0.01" data-month="10"></label>
+    <label>Září       <input class="inp field-narrow" type="number" step="0.01" data-month="9"></label>
+    <label>Říjen      <input class="inp field-narrow" type="number" step="0.01" data-month="10"></label>
     <label>Listopad   <input class="inp field-narrow" type="number" step="0.01" data-month="11"></label>
     <label>Prosinec   <input class="inp field-narrow" type="number" step="0.01" data-month="12"></label>
   </div>
@@ -164,19 +164,19 @@
                 </div>
                 <div class="flex items-end gap-2">
                   <input id="obj-has-series-cons" type="checkbox" class="chk">
-                  <label for="obj-has-series-cons" class="lbl !mb-0">MĂˇm hodinovĂ©/ÂĽh spotĹ™eby (nahraju)</label>
+                  <label for="obj-has-series-cons" class="lbl !mb-0">Mám hodinové/¼h spotřeby (nahraju)</label>
                 </div>
               </div>
 
               <div class="rounded-lg border bg-white p-3 space-y-3">
-                <div class="text-sm text-slate-600">NemĂˇĹˇ profil? Zadej roÄŤnĂ­/mÄ›sĂ­ÄŤnĂ­ spotĹ™eby a <strong>Profile generator</strong> je pĹ™epoÄŤĂ­tĂˇ na hodinovĂ©. (ZatĂ­m jen UI â€“ bez napojenĂ­ na backend.)</div>
+                <div class="text-sm text-slate-600">Nemáš profil? Zadej roční/měsíční spotřeby a <strong>Profile generator</strong> je přepočítá na hodinové. (Zatím jen UI – bez napojení na backend.)</div>
                 <div class="grid md:grid-cols-2 gap-3">
                   <div>
-                    <label class="lbl">MÄ›sĂ­ÄŤnĂ­ spotĹ™eby (MWh) â€“ CSV</label>
+                    <label class="lbl">Měsíční spotřeby (MWh) – CSV</label>
                     <input id="obj-monthly-csv" type="file" accept=".csv" class="inp-file when-series">
                   </div>
                   <div>
-                    <label class="lbl">HodinovĂ©/ÂĽh spotĹ™eby â€“ CSV</label>
+                    <label class="lbl">Hodinové/¼h spotřeby – CSV</label>
                     <input id="obj-series-cons-csv" type="file" accept=".csv" class="inp-file when-series">
                   </div>
                 </div>
@@ -185,7 +185,7 @@
               <div class="grid md:grid-cols-2 gap-3">
                 <div class="flex items-end gap-2">
                   <input id="obj-has-gen" type="checkbox" class="chk">
-                  <label for="obj-has-gen" class="lbl !mb-0">Objekt mĂˇ vlastnĂ­ vĂ˝robu</label>
+                  <label for="obj-has-gen" class="lbl !mb-0">Objekt má vlastní výrobu</label>
                 </div>
                 <div class="grid grid-cols-3 gap-3 obj-gen" style="display:none;">
                   <div>
@@ -205,52 +205,52 @@
 
               <div class="grid md:grid-cols-2 gap-3 obj-acc" style="display:none;">
                 <div>
-                  <label class="lbl">Akum. nĂˇdrĹľ TUV (mÂł)</label>
+                  <label class="lbl">Akum. nádrž TUV (m³)</label>
                   <input id="obj-tuv" type="number" step="0.01" class="inp">
                 </div>
                 <div class="grid grid-cols-3 gap-3">
                   <div class="per-object-field">
-                    <label class="lbl">Cena komoditnĂ­ (KÄŤ/MWh)</label>
+                    <label class="lbl">Cena komoditní (Kč/MWh)</label>
                     <input id="obj-price-comm" type="number" step="1" class="inp">
                   </div>
                   <div class="per-object-field">
-                    <label class="lbl">Distribuce: reĹľim</label>
+                    <label class="lbl">Distribuce: režim</label>
                     <select id="obj-dist-mode" class="inp">
-                      <option value="unit">JednotkovĂˇ cena</option>
-                      <option value="tariff">DistribuÄŤnĂ­ sazba</option>
+                      <option value="unit">Jednotková cena</option>
+                      <option value="tariff">Distribuční sazba</option>
                     </select>
                   </div>
                   <div class="per-object-field">
-                    <label class="lbl">Cena pĹ™etokĹŻ (KÄŤ/MWh)</label>
+                    <label class="lbl">Cena přetoků (Kč/MWh)</label>
                     <input id="obj-price-feedin" type="number" step="1" class="inp">
                   </div>
                 </div>
               </div>
 
               <div class="flex items-center gap-2">
-                <button id="obj-save" class="btn-primary">PĹ™idat objekt</button>
-                <button id="obj-cancel" class="btn-ghost">ZruĹˇit</button>
+                <button id="obj-save" class="btn-primary">Přidat objekt</button>
+                <button id="obj-cancel" class="btn-ghost">Zrušit</button>
               </div>
             </div>
 
-            <!-- Tabulka objektĹŻ -->
+            <!-- Tabulka objektů -->
             <div class="overflow-auto rounded-xl border bg-white">
               <table class="w-full text-sm table-fixed">
                 <thead class="bg-slate-100 text-slate-700">
                   <tr>
-                    <th class="th">NĂˇzev</th>
-                    <th class="th">RoÄŤnĂ­ spotĹ™eba</th>
-                    <th class="th">RoÄŤnĂ­ vĂ˝roba</th>
-                    <th class="th">Cena komoditnĂ­</th>
-                    <th class="th">Cena distribuÄŤnĂ­</th>
-                    <th class="th">DistribuÄŤnĂ­ sazba</th>
-                    <th class="th">Cena pĹ™etokĹŻ</th>
+                    <th class="th">Název</th>
+                    <th class="th">Roční spotřeba</th>
+                    <th class="th">Roční výroba</th>
+                    <th class="th">Cena komoditní</th>
+                    <th class="th">Cena distribuční</th>
+                    <th class="th">Distribuční sazba</th>
+                    <th class="th">Cena přetoků</th>
                     <th class="th">FVE</th>
                     <th class="th">KGJ</th>
                     <th class="th">Baterie</th>
-                    <th class="th">Akum. nĂˇdrĹľ</th>
-                    <th class="th">SpotĹ™eby sĂ©rie</th>
-                    <th class="th">VĂ˝roby sĂ©rie</th>
+                    <th class="th">Akum. nádrž</th>
+                    <th class="th">Spotřeby série</th>
+                    <th class="th">Výroby série</th>
                     <th class="th w-28">Akce</th>
                   </tr>
                 </thead>
@@ -268,37 +268,37 @@
         </div>
         <div class="p-5 space-y-4">
           <div>
-            <label class="lbl">MaximĂˇlnĂ­ poÄŤet pĹ™Ă­jemcĹŻ</label>
+            <label class="lbl">Maximální počet příjemců</label>
             <input id="max_recipients" type="number" value="3" class="inp">
           </div>
           <div>
-            <label class="lbl">Verze alokaÄŤnĂ­ho klĂ­ÄŤe</label>
+            <label class="lbl">Verze alokačního klíče</label>
             <select id="mode" class="inp">
               <option value="hybrid" selected>hybrid</option>
               <option value="proportional">proportional</option>
             </select>
           </div>
           <div class="pt-2">
-            <button id="btn-run-step13" class="btn-brand w-full">Spustit krok 1â†’3</button>
-            <p class="text-xs text-slate-500 mt-2">ZatĂ­m volĂˇ jen Step 3 jako dĹ™Ă­v; postupnÄ› pĹ™idĂˇme Step 1/2. Po dobÄ›hu otevĹ™eme zĂˇloĹľku VĂ˝stupy.</p>
+            <button id="btn-run-step13" class="btn-brand w-full">Spustit krok 1→3</button>
+            <p class="text-xs text-slate-500 mt-2">Zatím volá jen Step 3 jako dřív; postupně přidáme Step 1/2. Po doběhu otevřeme záložku Výstupy.</p>
           </div>
           <div id="run-msg" class="text-xs text-slate-600"></div>
         </div>
       </div>
     </section>
 
-    <!-- VĂťSLEDKY / DALĹ ĂŤ STRĂNKA -->
+    <!-- VÝSLEDKY / DALŠÍ STRÁNKA -->
     <section class="rounded-2xl border bg-white p-5">
       <div class="flex items-center gap-3">
-        <h2 class="font-semibold">VĂ˝stupy</h2>
-        <a href="./results.html" class="btn-ghost ml-auto">OtevĹ™Ă­t strĂˇnku s vĂ˝sledky</a>
+        <h2 class="font-semibold">Výstupy</h2>
+        <a href="./results.html" class="btn-ghost ml-auto">Otevřít stránku s výsledky</a>
       </div>
-      <p class="text-sm text-slate-600 mt-1">DetailnĂ­ vĂ˝sledky pĹ™idĂˇme sem do samostatnĂ© karty/strĂˇnky. ProzatĂ­m zĹŻstĂˇvĂˇ pĹŻvodnĂ­ sekce â€žVĂ˝stupyâ€ś na starĂ© strĂˇnce.</p>
+      <p class="text-sm text-slate-600 mt-1">Detailní výsledky přidáme sem do samostatné karty/stránky. Prozatím zůstává původní sekce „Výstupy“ na staré stránce.</p>
     </section>
   </main>
 
-  <script src="./config.js?v=1758623675"></script>
-  <script src="./app.js?v=1758623675"></script>
-<script src="./toggles.js?v=1758623675"></script>
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
+<script src="./toggles.js?v=1758610240"></script>
 <!-- === ROW-BASED UNIFORM BLOCKS (replaces old #uniform-pricing) === --></body>
 </html>
